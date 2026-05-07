@@ -2,25 +2,120 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-		/>
-
-		<title>reveal.js</title>
-
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>B2B Sales Prediction Thesis</title>
 		<link rel="stylesheet" href="dist/reset.css" />
 		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/black.css" />
-
-		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="dist/theme/dracula.css" />
 		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				
+				<!-- Slide 1: Title -->
+				<section>
+					<h3>A Comparative Analysis of Machine Learning and Deep Learning Architectures in B2B Sales Prediction</h3>
+					<p><small>Alejandro Axel Sanchez Silva</small></p>
+					<p><small>Human-Centred AI Masters</small></p>
+				</section>
+				
+				<!-- Slide 2: Motivation -->
+				<section>
+					<h2>The Challenge in B2B Sales</h2>
+					<ul>
+						<li class="fragment">Sales departments waste effort on low-conversion prospects.</li>
+						<li class="fragment">CRM Data shows severe class imbalance (77% Losses vs 22% Wins).</li>
+						<li class="fragment">Goal: Transform static pipelines into dynamic, probability-based early warning systems.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 3: Data Balancing -->
+				<section>
+					<h2>Data Preparation</h2>
+					<ul>
+						<li>78,025 total records from an automotive CRM.</li>
+						<li>Balancing applied <strong>only</strong> to training data to prevent leakage.</li>
+						<li><strong>SMOTE</strong>: Synthetic oversampling via interpolation.</li>
+						<li><strong>ADASYN</strong>: Focuses on hard-to-learn minority instances.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 4: Research Questions Overview -->
+				<section>
+					<h2>Research Questions</h2>
+					<ol>
+						<li>Traditional vs. Deep Learning performance?</li>
+						<li>Impact of feature reduction & key predictive drivers?</li>
+						<li>Translating AI outputs to practical sales insights?</li>
+						<li>Balancing accuracy with ethical GDPR compliance?</li>
+					</ol>
+				</section>
+
+				<!-- Slide 5: RQ1 -->
+				<section>
+					<h3>RQ1: Traditional vs. Modern Architectures</h3>
+					<p><strong>Result:</strong> Traditional tree-based models decisively outclassed Modern Deep Learning in tabular CRM context.</p>
+					<ul class="fragment">
+						<li><strong>XGBoost (100% features + SMOTE):</strong> 89.57% Accuracy, 0.939 ROC-AUC.</li>
+						<li><strong>FT-Transformer:</strong> Collapsed completely utilizing full features (Worst performer).</li>
+						<li>Highlights the "Deep Learning Gap" - complex models failed without immense structure tuning.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 6: RQ2 -->
+				<section>
+					<h3>RQ2: Feature Selection & Key Drivers</h3>
+					<p><strong>Result:</strong> Surprising resilience to data reduction limits.</p>
+					<ul class="fragment">
+						<li>Top models maintained peak accuracy using just <strong>75%</strong> of features.</li>
+						<li>Performance steeply collapses when restricted to 25%.</li>
+						<li><strong>Top Drivers:</strong> Deal Velocity (Days Qualified), Opportunity Financial Value, and Client Relationship History.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 7: RQ3 -->
+				<section>
+					<h3>RQ3: XAI & Practical Insights</h3>
+					<p><strong>Result:</strong> Making opaque models transparent.</p>
+					<ul>
+						<li class="fragment"><strong>Permutation Importance</strong>: Flagged deal duration as a macro-level barrier.</li>
+						<li class="fragment"><strong>SHAP</strong>: Quantified exactly how deal size impacts the baseline probability of closing.</li>
+						<li class="fragment"><strong>LIME</strong>: Provides "human-readable" local logic dictating why an individual deal was scored highly for sales reps.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 8: RQ4 -->
+				<section>
+					<h3>RQ4: Accuracy vs. GDPR Compliance</h3>
+					<p><strong>Result:</strong> The Ethical Accuracy-Calibration Paradox.</p>
+					<ul class="fragment">
+						<li>XGBoost is the most accurate (guesses most wins correctly).</li>
+						<li><strong>Random Forest</strong> yielded vastly lower Expected Calibration Error (ECE - 0.0326 vs 0.0674).</li>
+						<li><em>Takeaway:</em> Random Forest gives more trustworthy probability scores per deal, making it better suited for GDPR's "Right to an Explanation."</li>
+					</ul>
+				</section>
+
+				<!-- Slide 9: Business Actions -->
+				<section>
+					<h2>Actionable Intelligence</h2>
+					<ul>
+						<li class="fragment"><strong>Pivot to Resellers:</strong> (27.6% Win Rate) away from Field Sales (18.6%).</li>
+						<li class="fragment"><strong>New Client Hurdle:</strong> Utilize heavy introductory discounts since repeat clients have >82% win rates.</li>
+						<li class="fragment"><strong>Opportunity Health:</strong> Track stagnant stages as rapid phase movements correspond with higher closes.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 10: Conclusion -->
+				<section>
+					<h2>Conclusion</h2>
+					<ul>
+						<li>Gradient Boosting approaches remain the "end game" for tabular B2B forecasting.</li>
+						<li>Transparency trumps raw accuracy: Model actionability guides strategy.</li>
+						<li>Using models like Random Forest builds trust & keeps humans centered in the loop.</li>
+					</ul>
+				</section>
+
 			</div>
 		</div>
 
@@ -29,13 +124,8 @@
 		<script src="dist/plugin/markdown.js"></script>
 		<script src="dist/plugin/highlight.js"></script>
 		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
-
-				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
 			});
 		</script>
