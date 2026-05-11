@@ -8,6 +8,130 @@
 		<link rel="stylesheet" href="dist/reveal.css" />
 		<link rel="stylesheet" href="dist/theme/dracula.css" />
 		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+        <style>
+            .bar-chart {
+                display: flex;
+                height: 300px;
+                justify-content: space-around;
+                border-left: 2px solid white;
+                border-bottom: 2px solid white;
+                padding: 10px;
+                margin-top: 20px;
+            }
+            .bar-group {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-end;
+                width: 40%;
+                height: 100%;
+            }
+            .bar {
+                width: 100%;
+                background-color: #ff79c6;
+                text-align: center;
+                color: white;
+                font-weight: bold;
+                padding-top: 5px;
+                border-radius: 5px 5px 0 0;
+                overflow: hidden;
+            }
+            .bar.win { background-color: #50fa7b; color: #282a36; }
+            .bar.loss { background-color: #ff5555; }
+            .bar-label { margin-top: 10px; font-size: 0.8em; }
+
+            @keyframes growLoss {
+                from { height: 0; color: transparent; }
+                to { height: 77%; color: white; }
+            }
+            @keyframes growWin {
+                from { height: 0; color: transparent; }
+                to { height: 22%; color: #282a36; }
+            }
+            .present .bar.loss {
+                animation: growLoss 1.2s ease-out 0.5s both;
+            }
+            .present .bar.win {
+                animation: growWin 1.2s ease-out 0.5s both;
+            }
+
+            table.results-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                font-size: 0.65em;
+            }
+            .results-table th, .results-table td {
+                border: 1px solid #6272a4;
+                padding: 6px 10px;
+                text-align: center;
+            }
+            .results-table th { background-color: #44475a; color: #f8f8f2; }
+            .results-table tr:nth-child(even) { background-color: #282a36; }
+            .results-table tr.highlight { background-color: rgba(80, 250, 123, 0.2); }
+            .results-table tr:not(:first-child):hover { background-color: rgba(255, 121, 198, 0.4) !important; transition: background-color 0.1s; cursor: default; }
+
+            /* Modal Styles */
+            .matrix-modal {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; width: 100vw; height: 100vh;
+                background: rgba(0, 0, 0, 0.95);
+                z-index: 9999;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+            .matrix-modal.active {
+                display: flex;
+            }
+            .matrix-modal-content {
+                display: flex;
+                width: 90%;
+                height: 85%;
+                gap: 20px;
+                justify-content: center;
+                align-items: center;
+            }
+            .matrix-modal-panel {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 100%;
+            }
+            .matrix-modal-panel img {
+                max-width: 100%;
+                max-height: 90%;
+                object-fit: contain;
+                border-radius: 8px;
+            }
+            .matrix-modal-title {
+                color: white;
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+                font-family: sans-serif;
+            }
+            .close-modal {
+                position: absolute;
+                top: 20px;
+                right: 30px;
+                color: white;
+                font-size: 40px;
+                font-weight: bold;
+                cursor: pointer;
+                background: none;
+                border: none;
+            }
+            .close-modal:hover { color: #ff5555; }
+            .clickable-matrix {
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+            .clickable-matrix:hover {
+                transform: scale(1.02);
+            }
+        </style>
 	</head>
 	<body>
 		<div class="reveal">
@@ -25,94 +149,246 @@
 					<h2>The Challenge in B2B Sales</h2>
 					<ul>
 						<li class="fragment">Sales departments waste effort on low-conversion prospects.</li>
-						<li class="fragment">CRM Data shows severe class imbalance (77% Losses vs 22% Wins).</li>
 						<li class="fragment">Goal: Transform static pipelines into dynamic, probability-based early warning systems.</li>
+                        <li class="fragment">Requires interpretable models for real-world sales strategy.</li>
 					</ul>
 				</section>
 
-				<!-- Slide 3: Data Balancing -->
+				<!-- Slide 3: Phase 1 - Data -->
 				<section>
-					<h2>Data Preparation</h2>
+					<h2>Phase 1: Data Collection</h2>
+					<p>Dataset: 78,025 records from an automotive CRM.</p>
+					<p><strong>Severe Class Imbalance:</strong></p>
+                    <div class="bar-chart">
+                        <div class="bar-group">
+                            <div class="bar loss" style="height: 100%;">60,398 (77%)</div>
+                            <div class="bar-label">Losses</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar win" style="height: 29%;">17,627 (22%)</div>
+                            <div class="bar-label">Wins</div>
+                        </div>
+                    </div>
+				</section>
+
+				<!-- Slide 4: Phase 1 - Preprocessing -->
+				<section>
+					<h2>Phase 1: Feature Selection</h2>
+                    <p>Correlation-Based Redundancy Removal to mitigate multicollinearity.</p>
 					<ul>
-						<li>78,025 total records from an automotive CRM.</li>
-						<li>Balancing applied <strong>only</strong> to training data to prevent leakage.</li>
-						<li><strong>SMOTE</strong>: Synthetic oversampling via interpolation.</li>
-						<li><strong>ADASYN</strong>: Focuses on hard-to-learn minority instances.</li>
+						<li class="fragment">Computed Pearson correlation matrix.</li>
+						<li class="fragment">Generated experimental subsets based on correlation limits:</li>
+						<li class="fragment"><strong>75% Subset:</strong> Moderate filter, preserves majority of signal.</li>
+						<li class="fragment"><strong>25% Subset:</strong> Aggressive filtration, nearly independent variables.</li>
 					</ul>
 				</section>
 
-				<!-- Slide 4: Research Questions Overview -->
+				<!-- Slide 4a: Phase 1 - Full Matrix -->
 				<section>
-					<h2>Research Questions</h2>
-					<ol>
-						<li>Traditional vs. Deep Learning performance?</li>
-						<li>Impact of feature reduction & key predictive drivers?</li>
-						<li>Translating AI outputs to practical sales insights?</li>
-						<li>Balancing accuracy with ethical GDPR compliance?</li>
-					</ol>
+					<h2>Full Correlation Matrix</h2>
+					<p>All attributes included (100% Features)</p>
+					<img src="images/Full_Features_correlation.jpg" alt="Full Correlation Matrix" style="max-height: 450px; border-radius: 8px;">
 				</section>
 
-				<!-- Slide 5: RQ1 -->
+				<!-- Slide 4b: Phase 1 - 75% Matrix -->
 				<section>
-					<h3>RQ1: Traditional vs. Modern Architectures</h3>
-					<p><strong>Result:</strong> Traditional tree-based models decisively outclassed Modern Deep Learning in tabular CRM context.</p>
+					<h2>Correlation Matrix: 75% Threshold</h2>
+					<p>Redundant variables removed (Moderate Filter)</p>
+					<div style="display: flex; justify-content: center; gap: 20px;">
+						<div style="text-align: center; width: 45%;">
+							<p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 75%</p>
+							<img class="clickable-matrix" src="images/ADASYN_75pct_Features_correlation.jpg" alt="ADASYN 75% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 75% Threshold')">
+						</div>
+						<div style="text-align: center; width: 45%;">
+							<p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 75%</p>
+							<img class="clickable-matrix" src="images/SMOTE_75pct_Features_correlation.jpg" alt="SMOTE 75% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'SMOTE 75% Threshold')">
+						</div>
+					</div>
+				</section>
+
+				<!-- Slide 4c: Phase 1 - 25% Matrix -->
+				<section>
+					<h2>Correlation Matrix: 25% Threshold</h2>
+					<p>Aggressive filtration (Nearly independent variables)</p>
+					<div style="display: flex; justify-content: center; gap: 20px;">
+						<div style="text-align: center; width: 45%;">
+							<p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 25%</p>
+							<img class="clickable-matrix" src="images/ADASYN_25pct_Features_correlation.jpg" alt="ADASYN 25% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 25% Threshold')">
+						</div>
+						<div style="text-align: center; width: 45%;">
+							<p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 25%</p>
+							<img class="clickable-matrix" src="images/SMOTE_25pct_Features_correlation.jpg" alt="SMOTE 25% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'SMOTE 25% Threshold')">
+						</div>
+					</div>
+				</section>
+
+				<!-- Slide 5: Phase 2 & 3 - Partitioning -->
+				<section>
+					<h2>Phase 2 & 3: Partitioning</h2>
+					<ul>
+						<li>80/20 Stratified Train-Test Split.</li>
+						<li class="fragment"><strong>Training Data (80%):</strong> Used for model learning and balancing.</li>
+						<li class="fragment"><strong>Testing Data (20%):</strong> Completely untouched, preserves native "Won"/"Loss" distribution for honest evaluation.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 6: Phase 2 & 3 - Balancing -->
+				<section>
+					<h2>Phase 2 & 3: Data Balancing</h2>
+                    <p>Applied <strong>strictly</strong> to Training Data.</p>
+					<ul>
+						<li class="fragment"><strong>SMOTE:</strong> Synthetic Minority Over-sampling Technique via nearest-neighbor interpolation.</li>
+						<li class="fragment"><strong>ADASYN:</strong> Adaptive Synthetic sampling focusing on hard-to-learn minority instances.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 7: Phase 4 - Modeling -->
+				<section>
+					<h2>Phase 4: AI Modeling & Tuning</h2>
+					<ul>
+						<li class="fragment">Pipeline developed in Python 3 (scikit-learn, XGBoost, PyTorch).</li>
+						<li class="fragment">Hyperparameter tuning optimized for <strong>F1 Score</strong> to balance precision and recall.</li>
+						<li class="fragment">Overcoming the risk of models simply guessing "Loss" every time.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 8: Phase 4 - Architectures -->
+				<section>
+					<h2>Phase 4: Architectures Compared</h2>
+                    <div style="display: flex; justify-content: space-between; text-align: left; margin-top: 20px;">
+                        <div style="width: 48%; padding: 10px; border: 1px solid #44475a; border-radius: 8px;">
+                            <h4 style="color: #8be9fd;">Traditional Machine Learning</h4>
+                            <ul style="font-size: 0.8em;">
+                                <li><strong>Random Forest:</strong> Bagging ensemble, stable baseline.</li>
+                                <li><strong>XGBoost:</strong> Gradient-boosting framework. The benchmark standard.</li>
+                            </ul>
+                        </div>
+                        <div style="width: 48%; padding: 10px; border: 1px solid #44475a; border-radius: 8px;">
+                            <h4 style="color: #ff79c6;">Modern Deep Learning</h4>
+                            <ul style="font-size: 0.8em;">
+                                <li><strong>FT-Transformer:</strong> Feature tokenization with multi-head self-attention.</li>
+                                <li><strong>TabNet:</strong> Sequential sparse attention mechanism.</li>
+                            </ul>
+                        </div>
+                    </div>
+				</section>
+
+				<!-- Slide 9: Phase 5 - Evaluation -->
+				<section>
+					<h2>Phase 5: Evaluation Criteria</h2>
+					<ul>
+						<li><strong>Accuracy:</strong> Percentage of overall correct predictions (can be misleading).</li>
+						<li class="fragment"><strong>F1 Score:</strong> Balance of Precision (correct wins) and Recall (catching all possible wins).</li>
+						<li class="fragment"><strong>ROC-AUC:</strong> Threshold-independent discriminative ability (1.0 is perfect).</li>
+					</ul>
+				</section>
+
+				<!-- Slide 10: Phase 5 - Top Models -->
+				<section>
+					<h2>Top Performing Configurations</h2>
+                    <div style="display: flex; justify-content: flex-end; width: 100%; margin-bottom: 5px;">
+                        <button style="padding: 5px 12px; background-color: #bd93f9; border: none; border-radius: 5px; color: #282a36; font-weight: bold; font-size: 0.6em; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="openFullTableModal()">View Full Ranking</button>
+                    </div>
+                    <table class="results-table" style="margin-top: 0;">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Configuration</th>
+                            <th>Accuracy</th>
+                            <th>F1 Score</th>
+                            <th>ROC-AUC</th>
+                        </tr>
+                        <tr class="highlight">
+                            <td>1</td>
+                            <td>XGBoost (SMOTE) - 100% Features</td>
+                            <td>89.57%</td>
+                            <td>0.7576</td>
+                            <td>0.9390</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Random Forest (SMOTE) - 100% Features</td>
+                            <td>87.61%</td>
+                            <td>0.7195</td>
+                            <td>0.9250</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>TabNet (SMOTE) - 75% Features</td>
+                            <td>86.54%</td>
+                            <td>0.6979</td>
+                            <td>0.9015</td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>FT-Transformer (ADASYN) - 75% Features</td>
+                            <td>86.81%</td>
+                            <td>0.6830</td>
+                            <td>0.9083</td>
+                        </tr>
+                    </table>
+				</section>
+
+				<!-- Slide 11: Phase 5 - Insights -->
+				<section>
+					<h3>The "Deep Learning Gap"</h3>
+                    <p><strong>Result:</strong> Traditional tree-based models decisively outclassed Modern Deep Learning.</p>
 					<ul class="fragment">
-						<li><strong>XGBoost (100% features + SMOTE):</strong> 89.57% Accuracy, 0.939 ROC-AUC.</li>
-						<li><strong>FT-Transformer:</strong> Collapsed completely utilizing full features (Worst performer).</li>
-						<li>Highlights the "Deep Learning Gap" - complex models failed without immense structure tuning.</li>
+						<li>XGBoost proved highly precise in distinguishing success vs. failure.</li>
+						<li>Deep Learning models plateaued (~86.8% accuracy) and struggled severely with full feature sets.</li>
+                        <li><strong>Data Efficiency:</strong> Top models maintained accuracy at 75% features but collapsed at 25%.</li>
 					</ul>
 				</section>
 
-				<!-- Slide 6: RQ2 -->
+				<!-- Slide 12: Phase 5 - XAI -->
 				<section>
-					<h3>RQ2: Feature Selection & Key Drivers</h3>
-					<p><strong>Result:</strong> Surprising resilience to data reduction limits.</p>
+					<h2>Phase 5: Explainable AI (XAI)</h2>
+					<p>Transforming complex models into "human-readable" tools.</p>
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                        <div style="width: 32%; text-align: center;">
+                            <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">Permutation Importance</p>
+                            <img class="clickable-matrix" src="images/XGBoost_Permutation.jpg" alt="Permutation Importance" style="max-height: 250px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'Permutation Importance')">
+                        </div>
+                        <div style="width: 32%; text-align: center;">
+                            <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">SHAP</p>
+                            <img class="clickable-matrix" src="images/XGBoost_SHAP.jpg" alt="SHAP" style="max-height: 250px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'SHAP Analysis')">
+                        </div>
+                        <div style="width: 32%; text-align: center;">
+                            <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">LIME</p>
+                            <img class="clickable-matrix" src="images/XGBoost_LIME.jpg" alt="LIME" style="max-height: 250px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'LIME Analysis')">
+                        </div>
+                    </div>
+				</section>
+
+				<!-- Slide 13: Phase 5 - Insights -->
+				<section>
+					<h2>Actionable Sales Insights</h2>
+                    <p>What drives a successful B2B close?</p>
+					<ul>
+						<li class="fragment"><strong>Client History:</strong> Returning clients exhibit win rates exceeding 82%.</li>
+						<li class="fragment"><strong>Channel Strategy:</strong> Resellers (27.6% win rate) outperform Field Sales (18.6%).</li>
+						<li class="fragment"><strong>Deal Velocity:</strong> Successful deals have steady movement; lost deals stagnate.</li>
+                        <li class="fragment"><strong>Opportunity Health:</strong> High-dollar proposals face a much higher rejection rate.</li>
+					</ul>
+				</section>
+
+				<!-- Slide 14: Phase 5 - GDPR -->
+				<section>
+					<h3>Accuracy vs. GDPR Compliance</h3>
+					<p>The Ethical Accuracy-Calibration Paradox</p>
 					<ul class="fragment">
-						<li>Top models maintained peak accuracy using just <strong>75%</strong> of features.</li>
-						<li>Performance steeply collapses when restricted to 25%.</li>
-						<li><strong>Top Drivers:</strong> Deal Velocity (Days Qualified), Opportunity Financial Value, and Client Relationship History.</li>
+						<li><strong>XGBoost:</strong> Most accurate overall.</li>
+						<li><strong>Random Forest:</strong> Yielded a vastly lower Expected Calibration Error (ECE - 0.0326 vs 0.0674).</li>
+						<li><em>Takeaway:</em> Random Forest provides more "trustworthy" probability scores, aligning better with GDPR's "Right to an Explanation".</li>
 					</ul>
 				</section>
 
-				<!-- Slide 7: RQ3 -->
+				<!-- Slide 15: Conclusion -->
 				<section>
-					<h3>RQ3: XAI & Practical Insights</h3>
-					<p><strong>Result:</strong> Making opaque models transparent.</p>
+					<h2>Conclusion & Future Work</h2>
 					<ul>
-						<li class="fragment"><strong>Permutation Importance</strong>: Flagged deal duration as a macro-level barrier.</li>
-						<li class="fragment"><strong>SHAP</strong>: Quantified exactly how deal size impacts the baseline probability of closing.</li>
-						<li class="fragment"><strong>LIME</strong>: Provides "human-readable" local logic dictating why an individual deal was scored highly for sales reps.</li>
-					</ul>
-				</section>
-
-				<!-- Slide 8: RQ4 -->
-				<section>
-					<h3>RQ4: Accuracy vs. GDPR Compliance</h3>
-					<p><strong>Result:</strong> The Ethical Accuracy-Calibration Paradox.</p>
-					<ul class="fragment">
-						<li>XGBoost is the most accurate (guesses most wins correctly).</li>
-						<li><strong>Random Forest</strong> yielded vastly lower Expected Calibration Error (ECE - 0.0326 vs 0.0674).</li>
-						<li><em>Takeaway:</em> Random Forest gives more trustworthy probability scores per deal, making it better suited for GDPR's "Right to an Explanation."</li>
-					</ul>
-				</section>
-
-				<!-- Slide 9: Business Actions -->
-				<section>
-					<h2>Actionable Intelligence</h2>
-					<ul>
-						<li class="fragment"><strong>Pivot to Resellers:</strong> (27.6% Win Rate) away from Field Sales (18.6%).</li>
-						<li class="fragment"><strong>New Client Hurdle:</strong> Utilize heavy introductory discounts since repeat clients have >82% win rates.</li>
-						<li class="fragment"><strong>Opportunity Health:</strong> Track stagnant stages as rapid phase movements correspond with higher closes.</li>
-					</ul>
-				</section>
-
-				<!-- Slide 10: Conclusion -->
-				<section>
-					<h2>Conclusion</h2>
-					<ul>
-						<li>Gradient Boosting approaches remain the "end game" for tabular B2B forecasting.</li>
-						<li>Transparency trumps raw accuracy: Model actionability guides strategy.</li>
-						<li>Using models like Random Forest builds trust & keeps humans centered in the loop.</li>
+						<li>Gradient Boosting (XGBoost) remains the apex for tabular B2B forecasting.</li>
+						<li>Transparency and Model Actionability dictate practical success.</li>
+						<li><strong>Future Work:</strong> Incorporating unstructured data (emails/transcripts) via NLP and expanding hardware scaling.</li>
 					</ul>
 				</section>
 
@@ -128,6 +404,126 @@
 				hash: true,
 				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
 			});
+		</script>
+
+		<!-- Matrix Comparison Modal -->
+		<div id="matrixModal" class="matrix-modal">
+			<button class="close-modal" onclick="closeModal()">&times;</button>
+			<div class="matrix-modal-content">
+				<div class="matrix-modal-panel">
+					<div class="matrix-modal-title">Original (100% Features)</div>
+					<img src="images/Full_Features_correlation.jpg" alt="Original Matrix">
+				</div>
+				<div class="matrix-modal-panel">
+					<div id="modalCompareTitle" class="matrix-modal-title">Compared Matrix</div>
+					<img id="modalCompareImg" src="" alt="Compared Matrix">
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function openModal(imgSrc, title) {
+				document.getElementById('modalCompareImg').src = imgSrc;
+				document.getElementById('modalCompareTitle').innerText = title;
+				document.getElementById('matrixModal').classList.add('active');
+			}
+			function closeModal() {
+				document.getElementById('matrixModal').classList.remove('active');
+			}
+            
+            // Close on background click
+            document.getElementById('matrixModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+            
+            // Esc key close
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    if(typeof closeFullTableModal === 'function') closeFullTableModal();
+                    if(typeof closeSingleImageModal === 'function') closeSingleImageModal();
+                }
+            });
+		</script>
+
+		<!-- Full Table Modal -->
+		<div id="fullTableModal" class="matrix-modal">
+			<button class="close-modal" onclick="closeFullTableModal()">&times;</button>
+			<div class="matrix-modal-content" style="flex-direction: column; width: 85%; background: #282a36; padding: 20px; border-radius: 8px; overflow-y: auto; max-height: 90%; justify-content: flex-start;">
+				<h3 style="color: white; margin-bottom: 20px;">Table 5.1: Full Model Ranking</h3>
+				<table class="results-table" style="width: 100%; font-size: 0.9em; margin: 0; background-color: #282a36; color: #f8f8f2;">
+					<tr>
+						<th>Rank</th>
+						<th>Model Configuration</th>
+						<th>Accuracy</th>
+						<th>F1 Score</th>
+						<th>ROC-AUC</th>
+					</tr>
+					<tr><td>1</td><td>XGBoost (SMOTE) - 100% Features</td><td>89.57%</td><td>0.7576</td><td>0.9390</td></tr>
+					<tr><td>2</td><td>XGBoost (ADASYN) - 100% Features</td><td>89.50%</td><td>0.7554</td><td>0.9387</td></tr>
+					<tr><td>3</td><td>XGBoost (SMOTE) - 75% Features</td><td>89.50%</td><td>0.7551</td><td>0.9385</td></tr>
+					<tr><td>4</td><td>XGBoost (ADASYN) - 75% Features</td><td>89.44%</td><td>0.7533</td><td>0.9385</td></tr>
+					<tr><td>5</td><td>Random Forest (SMOTE) - 100% Features</td><td>87.61%</td><td>0.7195</td><td>0.9250</td></tr>
+					<tr><td>6</td><td>Random Forest (ADASYN) - 100% Features</td><td>87.60%</td><td>0.7186</td><td>0.9248</td></tr>
+					<tr><td>7</td><td>Random Forest (SMOTE) - 75% Features</td><td>87.53%</td><td>0.7157</td><td>0.9242</td></tr>
+					<tr><td>8</td><td>Random Forest (ADASYN) - 75% Features</td><td>87.39%</td><td>0.7121</td><td>0.9234</td></tr>
+					<tr><td>9</td><td>TabNet (SMOTE) - 75% Features</td><td>86.54%</td><td>0.6979</td><td>0.9015</td></tr>
+					<tr><td>10</td><td>TabNet (ADASYN) - 75% Features</td><td>86.53%</td><td>0.6976</td><td>0.9015</td></tr>
+					<tr><td>11</td><td>TabNet (SMOTE) - 100% Features</td><td>86.15%</td><td>0.6865</td><td>0.8927</td></tr>
+					<tr><td>12</td><td>TabNet (ADASYN) - 100% Features</td><td>85.94%</td><td>0.6811</td><td>0.8918</td></tr>
+					<tr><td>13</td><td>XGBoost (ADASYN) - 25% Features</td><td>86.91%</td><td>0.6811</td><td>0.8879</td></tr>
+					<tr><td>14</td><td>XGBoost (SMOTE) - 25% Features</td><td>86.88%</td><td>0.6806</td><td>0.8878</td></tr>
+					<tr><td>15</td><td>FT-Transformer (ADASYN) - 75% Features</td><td>86.81%</td><td>0.6830</td><td>0.9083</td></tr>
+					<tr><td>16</td><td>FT-Transformer (SMOTE) - 75% Features</td><td>86.66%</td><td>0.6784</td><td>0.9085</td></tr>
+					<tr><td>17</td><td>FT-Transformer (ADASYN) - 100% Features</td><td>86.30%</td><td>0.6698</td><td>0.9018</td></tr>
+					<tr><td>18</td><td>Random Forest (SMOTE) - 25% Features</td><td>86.19%</td><td>0.6685</td><td>0.8804</td></tr>
+					<tr><td>19</td><td>Random Forest (ADASYN) - 25% Features</td><td>86.20%</td><td>0.6680</td><td>0.8802</td></tr>
+					<tr><td>20</td><td>FT-Transformer (SMOTE) - 100% Features</td><td>86.17%</td><td>0.6657</td><td>0.9009</td></tr>
+					<tr><td>21</td><td>TabNet (SMOTE) - 25% Features</td><td>82.72%</td><td>0.6276</td><td>0.8404</td></tr>
+					<tr><td>22</td><td>TabNet (ADASYN) - 25% Features</td><td>82.37%</td><td>0.6223</td><td>0.8404</td></tr>
+					<tr><td>23</td><td>FT-Transformer (ADASYN) - 25% Features</td><td>84.14%</td><td>0.6033</td><td>0.8521</td></tr>
+					<tr><td>24</td><td>FT-Transformer (SMOTE) - 25% Features</td><td>83.99%</td><td>0.5969</td><td>0.8524</td></tr>
+				</table>
+			</div>
+		</div>
+
+		<script>
+			function openFullTableModal() {
+				document.getElementById('fullTableModal').classList.add('active');
+			}
+			function closeFullTableModal() {
+				document.getElementById('fullTableModal').classList.remove('active');
+			}
+            
+            // Close on background click
+            document.getElementById('fullTableModal').addEventListener('click', function(e) {
+                if (e.target === this) closeFullTableModal();
+            });
+		</script>
+
+		<!-- Single Image Modal -->
+		<div id="singleImageModal" class="matrix-modal">
+			<button class="close-modal" onclick="closeSingleImageModal()">&times;</button>
+			<div class="matrix-modal-content" style="width: 90%; height: 90%; justify-content: center; flex-direction: column;">
+                <div id="singleImageTitle" class="matrix-modal-title"></div>
+				<img id="singleImageImg" src="" alt="Enlarged View" style="max-width: 100%; max-height: 85%; object-fit: contain; border-radius: 8px;">
+			</div>
+		</div>
+
+		<script>
+			function openSingleImageModal(imgSrc, title) {
+				document.getElementById('singleImageImg').src = imgSrc;
+				document.getElementById('singleImageTitle').innerText = title;
+				document.getElementById('singleImageModal').classList.add('active');
+			}
+			function closeSingleImageModal() {
+				document.getElementById('singleImageModal').classList.remove('active');
+			}
+            
+            // Close on background click
+            document.getElementById('singleImageModal').addEventListener('click', function(e) {
+                if (e.target === this) closeSingleImageModal();
+            });
 		</script>
 	</body>
 </html>
