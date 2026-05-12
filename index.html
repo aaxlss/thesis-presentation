@@ -6,17 +6,51 @@
 		<title>B2B Sales Prediction Thesis</title>
 		<link rel="stylesheet" href="dist/reset.css" />
 		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/dracula.css" />
+		<link rel="stylesheet" href="dist/theme/white.css" />
 		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
+            :root {
+                --r-main-font: 'Montserrat', sans-serif;
+                --r-heading-font: 'Montserrat', sans-serif;
+                --r-background-color: #56A5B9;
+            }
+            body {
+                background-color: #56A5B9;
+            }
+            .reveal .slides section {
+                background-color: #ECF3F5;
+                padding: 20px 40px;
+                border-radius: 8px;
+                color: #333333;
+                box-sizing: border-box;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            }
+            .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+                color: #56A5B9;
+                text-transform: none;
+                margin-bottom: 15px;
+            }
+            .reveal section[data-background-color="#56A5B9"] {
+                background-color: transparent;
+                box-shadow: none;
+                color: #FFFFFF;
+            }
+            .reveal section[data-background-color="#56A5B9"] h1,
+            .reveal section[data-background-color="#56A5B9"] h2,
+            .reveal section[data-background-color="#56A5B9"] h3,
+            .reveal section[data-background-color="#56A5B9"] p {
+                color: #FFFFFF;
+            }
+
             .bar-chart {
                 display: flex;
-                height: 300px;
+                height: 200px;
                 justify-content: space-around;
-                border-left: 2px solid white;
-                border-bottom: 2px solid white;
+                border-left: 2px solid #333333;
+                border-bottom: 2px solid #333333;
                 padding: 10px;
-                margin-top: 20px;
+                margin-top: 10px;
             }
             .bar-group {
                 display: flex;
@@ -36,9 +70,9 @@
                 border-radius: 5px 5px 0 0;
                 overflow: hidden;
             }
-            .bar.win { background-color: #50fa7b; color: #282a36; }
-            .bar.loss { background-color: #ff5555; }
-            .bar-label { margin-top: 10px; font-size: 0.8em; }
+            .bar.win { background-color: #56A5B9; color: white; }
+            .bar.loss { background-color: #333333; }
+            .bar-label { margin-top: 10px; font-size: 0.8em; font-weight: bold; color: #333333; }
 
             @keyframes growLoss {
                 from { height: 0; color: transparent; }
@@ -55,6 +89,72 @@
                 animation: growWin 1.2s ease-out 0.5s both;
             }
 
+            /* Generic Animated Bar */
+            .generic-bar-container {
+                display: flex;
+                height: 200px;
+                justify-content: space-around;
+                border-left: 2px solid #333333;
+                border-bottom: 2px solid #333333;
+                padding: 10px;
+                margin-top: 10px;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .generic-bar-wrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-end;
+                flex: 1;
+                margin: 0 10px;
+            }
+            .generic-bar {
+                width: 100%;
+                background-color: #56A5B9;
+                text-align: center;
+                color: white;
+                font-weight: bold;
+                padding-top: 5px;
+                border-radius: 5px 5px 0 0;
+                height: 0;
+                overflow: hidden;
+                transition: height 1s ease-out 0.5s;
+            }
+            .present .generic-bar {
+                height: var(--target-height);
+            }
+            .generic-bar-label {
+                margin-top: 10px;
+                font-size: 0.5em;
+                font-weight: bold;
+                color: #333333;
+                text-align: center;
+            }
+            .generic-bar-value {
+                opacity: 0;
+                transition: opacity 0.5s ease-out 1.5s;
+            }
+            .present .generic-bar-value {
+                opacity: 1;
+            }
+            
+            /* Generic Animated Image */
+            .insight-image {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 1s ease-out 0.5s, transform 1s ease-out 0.5s;
+                max-height: 250px;
+                border-radius: 8px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+                margin-top: 10px;
+            }
+            .present .insight-image {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
             table.results-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -62,21 +162,21 @@
                 font-size: 0.65em;
             }
             .results-table th, .results-table td {
-                border: 1px solid #6272a4;
+                border: 1px solid #CCCCCC;
                 padding: 6px 10px;
                 text-align: center;
             }
-            .results-table th { background-color: #44475a; color: #f8f8f2; }
-            .results-table tr:nth-child(even) { background-color: #282a36; }
-            .results-table tr.highlight { background-color: rgba(80, 250, 123, 0.2); }
-            .results-table tr:not(:first-child):hover { background-color: rgba(255, 121, 198, 0.4) !important; transition: background-color 0.1s; cursor: default; }
+            .results-table th { background-color: #56A5B9; color: white; }
+            .results-table tr:nth-child(even) { background-color: #F8F9FA; }
+            .results-table tr.highlight { background-color: rgba(86, 165, 185, 0.2); }
+            .results-table tr:not(:first-child):hover { background-color: rgba(86, 165, 185, 0.4) !important; transition: background-color 0.1s; cursor: default; }
 
             /* Modal Styles */
             .matrix-modal {
                 display: none;
                 position: fixed;
                 top: 0; left: 0; width: 100vw; height: 100vh;
-                background: rgba(0, 0, 0, 0.95);
+                background: rgba(86, 165, 185, 0.95);
                 z-index: 9999;
                 align-items: center;
                 justify-content: center;
@@ -138,10 +238,10 @@
 			<div class="slides">
 				
 				<!-- Slide 1: Title -->
-				<section>
-					<h3>A Comparative Analysis of Machine Learning and Deep Learning Architectures in B2B Sales Prediction</h3>
-					<p><small>Alejandro Axel Sanchez Silva</small></p>
-					<p><small>Human-Centred AI Masters</small></p>
+				<section data-background-color="#56A5B9">
+					<h3 style="color: #FFFFFF;">A Comparative Analysis of Machine Learning and Deep Learning Architectures in B2B Sales Prediction</h3>
+					<p style="color: #FFFFFF;"><small>Alejandro Axel Sanchez Silva</small></p>
+					<p style="color: #FFFFFF;"><small>Human-Centred AI Masters</small></p>
 				</section>
 				
 				<!-- Slide 2: Motivation -->
@@ -182,6 +282,76 @@
                     </div>
 				</section>
 
+				<!-- Insight 1: Client History -->
+				<section>
+					<h2>Insight 1: Client History</h2>
+                    <p>Returning clients exhibit win rates exceeding 82%.</p>
+					<div class="generic-bar-container">
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 17%; background-color: #E2B030;"><span class="generic-bar-value">17%</span></div>
+                            <div class="generic-bar-label">0 (New)</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 82%; background-color: #E2B030;"><span class="generic-bar-value">82%</span></div>
+                            <div class="generic-bar-label">1</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 73%; background-color: #E67A26;"><span class="generic-bar-value">73%</span></div>
+                            <div class="generic-bar-label">2</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 61%; background-color: #E65A26;"><span class="generic-bar-value">61%</span></div>
+                            <div class="generic-bar-label">3</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 46%; background-color: #D93826;"><span class="generic-bar-value">46%</span></div>
+                            <div class="generic-bar-label">4 (Returner)</div>
+                        </div>
+                    </div>
+				</section>
+
+				<!-- Insight 2: Channel Strategy -->
+				<section>
+					<h2>Insight 2: Channel Strategy</h2>
+                    <p>Resellers outperform Field Sales by nearly 10%.</p>
+					<div class="generic-bar-container">
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 27.6%; background-color: #5B4086;"><span class="generic-bar-value">27.6%</span></div>
+                            <div class="generic-bar-label">Reseller</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 21.8%; background-color: #7979AA;"><span class="generic-bar-value">21.8%</span></div>
+                            <div class="generic-bar-label">Telesales</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 18.6%; background-color: #A3A3C2;"><span class="generic-bar-value">18.6%</span></div>
+                            <div class="generic-bar-label">Field Sales</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 18.5%; background-color: #C6C8D9;"><span class="generic-bar-value">18.5%</span></div>
+                            <div class="generic-bar-label">Other</div>
+                        </div>
+                        <div class="generic-bar-wrapper">
+                            <div class="generic-bar" style="--target-height: 6.3%; background-color: #EAEBF2;"><span class="generic-bar-value" style="color: #333">6.3%</span></div>
+                            <div class="generic-bar-label">Telecoverage</div>
+                        </div>
+                    </div>
+				</section>
+
+				<!-- Insight 3: Deal Velocity -->
+				<section>
+					<h2>Insight 3: Deal Velocity</h2>
+                    <p>Successful deals have steady movement; lost deals stagnate with massive outliers.</p>
+                    <img class="insight-image" src="images/Deal_Complexity.png" alt="Deal Complexity Box Plot">
+				</section>
+
+				<!-- Insight 4: Opportunity Health -->
+				<section>
+					<h2>Insight 4: Opportunity Health</h2>
+                    <p>High-dollar proposals face a much higher rejection rate.</p>
+                    <img class="insight-image" src="images/Opportunity_Amount.png" alt="Opportunity Amount Box Plot">
+				</section>
+
 				<!-- Slide 4: Phase 1 - Preprocessing -->
 				<section>
 					<h2>Phase 1: Feature Selection</h2>
@@ -198,7 +368,7 @@
 				<section>
 					<h2>Full Correlation Matrix</h2>
 					<p>All attributes included (100% Features)</p>
-					<img src="images/Full_Features_correlation.jpg" alt="Full Correlation Matrix" style="max-height: 450px; border-radius: 8px;">
+					<img src="images/Full_Features_correlation.jpg" alt="Full Correlation Matrix" style="max-height: 350px; border-radius: 8px;">
 				</section>
 
 				<!-- Slide 4b: Phase 1 - 75% Matrix -->
@@ -208,11 +378,11 @@
 					<div style="display: flex; justify-content: center; gap: 20px;">
 						<div style="text-align: center; width: 45%;">
 							<p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 75%</p>
-							<img class="clickable-matrix" src="images/ADASYN_75pct_Features_correlation.jpg" alt="ADASYN 75% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 75% Threshold')">
+							<img class="clickable-matrix" src="images/ADASYN_75pct_Features_correlation.jpg" alt="ADASYN 75% Matrix" style="max-height: 250px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 75% Threshold')">
 						</div>
 						<div style="text-align: center; width: 45%;">
 							<p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 75%</p>
-							<img class="clickable-matrix" src="images/SMOTE_75pct_Features_correlation.jpg" alt="SMOTE 75% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'SMOTE 75% Threshold')">
+							<img class="clickable-matrix" src="images/SMOTE_75pct_Features_correlation.jpg" alt="SMOTE 75% Matrix" style="max-height: 250px; border-radius: 8px;" onclick="openModal(this.src, 'SMOTE 75% Threshold')">
 						</div>
 					</div>
 				</section>
@@ -224,7 +394,7 @@
 					<div style="display: flex; justify-content: center; gap: 20px;">
 						<div style="text-align: center; width: 45%;">
 							<p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 25%</p>
-							<img class="clickable-matrix" src="images/ADASYN_25pct_Features_correlation.jpg" alt="ADASYN 25% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 25% Threshold')">
+							<img class="clickable-matrix" src="images/ADASYN_25pct_Features_correlation.jpg" alt="ADASYN 25% Matrix" style="max-height: 250px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 25% Threshold')">
 						</div>
 						<div style="text-align: center; width: 45%;">
 							<p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 25%</p>
@@ -298,7 +468,7 @@
 				<section>
 					<h2>Top Performing Configurations</h2>
                     <div style="display: flex; justify-content: flex-end; width: 100%; margin-bottom: 5px;">
-                        <button style="padding: 5px 12px; background-color: #bd93f9; border: none; border-radius: 5px; color: #282a36; font-weight: bold; font-size: 0.6em; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="openFullTableModal()">View Full Ranking</button>
+                        <button style="padding: 5px 12px; background-color: #56A5B9; border: none; border-radius: 5px; color: #FFFFFF; font-weight: bold; font-size: 0.6em; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="openFullTableModal()">View Full Ranking</button>
                     </div>
                     <table class="results-table" style="margin-top: 0;">
                         <tr>
@@ -357,30 +527,19 @@
 					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
                         <div style="width: 32%; text-align: center;">
                             <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">Permutation Importance</p>
-                            <img class="clickable-matrix" src="images/XGBoost_Permutation.jpg" alt="Permutation Importance" style="max-height: 250px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'Permutation Importance')">
+                            <img class="clickable-matrix" src="images/XGBoost_Permutation.jpg" alt="Permutation Importance" style="max-height: 200px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'Permutation Importance')">
                         </div>
                         <div style="width: 32%; text-align: center;">
                             <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">SHAP</p>
-                            <img class="clickable-matrix" src="images/XGBoost_SHAP.jpg" alt="SHAP" style="max-height: 250px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'SHAP Analysis')">
+                            <img class="clickable-matrix" src="images/XGBoost_SHAP.jpg" alt="SHAP" style="max-height: 200px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'SHAP Analysis')">
                         </div>
                         <div style="width: 32%; text-align: center;">
                             <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">LIME</p>
-                            <img class="clickable-matrix" src="images/XGBoost_LIME.jpg" alt="LIME" style="max-height: 250px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'LIME Analysis')">
+                            <img class="clickable-matrix" src="images/XGBoost_LIME.jpg" alt="LIME" style="max-height: 200px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'LIME Analysis')">
                         </div>
                     </div>
 				</section>
 
-				<!-- Slide 13: Phase 5 - Insights -->
-				<section>
-					<h2>Actionable Sales Insights</h2>
-                    <p>What drives a successful B2B close?</p>
-					<ul>
-						<li class="fragment"><strong>Client History:</strong> Returning clients exhibit win rates exceeding 82%.</li>
-						<li class="fragment"><strong>Channel Strategy:</strong> Resellers (27.6% win rate) outperform Field Sales (18.6%).</li>
-						<li class="fragment"><strong>Deal Velocity:</strong> Successful deals have steady movement; lost deals stagnate.</li>
-                        <li class="fragment"><strong>Opportunity Health:</strong> High-dollar proposals face a much higher rejection rate.</li>
-					</ul>
-				</section>
 
 				<!-- Slide 14: Phase 5 - GDPR -->
 				<section>
@@ -460,9 +619,9 @@
 		<!-- Full Table Modal -->
 		<div id="fullTableModal" class="matrix-modal">
 			<button class="close-modal" onclick="closeFullTableModal()">&times;</button>
-			<div class="matrix-modal-content" style="flex-direction: column; width: 85%; background: #282a36; padding: 20px; border-radius: 8px; overflow-y: auto; max-height: 90%; justify-content: flex-start;">
-				<h3 style="color: white; margin-bottom: 20px;">Table 5.1: Full Model Ranking</h3>
-				<table class="results-table" style="width: 100%; font-size: 0.9em; margin: 0; background-color: #282a36; color: #f8f8f2;">
+			<div class="matrix-modal-content" style="flex-direction: column; width: 85%; background: #ECF3F5; padding: 20px; border-radius: 8px; overflow-y: auto; max-height: 90%; justify-content: flex-start;">
+				<h3 style="color: #56A5B9; margin-bottom: 20px;">Table 5.1: Full Model Ranking</h3>
+				<table class="results-table" style="width: 100%; font-size: 0.9em; margin: 0; background-color: transparent; color: #333333;">
 					<tr>
 						<th>Rank</th>
 						<th>Model Configuration</th>
