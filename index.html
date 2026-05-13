@@ -1,699 +1,1063 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<title>B2B Sales Prediction Thesis</title>
-		<link rel="stylesheet" href="dist/reset.css" />
-		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/white.css" />
-		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-        <style>
-            :root {
-                --r-main-font: 'Montserrat', sans-serif;
-                --r-heading-font: 'Montserrat', sans-serif;
-                --r-background-color: #56A5B9;
-            }
-            body {
-                background-color: #56A5B9;
-            }
-            .reveal .slides section {
-                background-color: #ECF3F5;
-                padding: 20px 40px;
-                border-radius: 8px;
-                color: #333333;
-                box-sizing: border-box;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            }
-            .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
-                color: #56A5B9;
-                text-transform: none;
-                margin-bottom: 15px;
-            }
-            .reveal section[data-background-color="#56A5B9"] {
-                background-color: transparent;
-                box-shadow: none;
-                color: #FFFFFF;
-            }
-            .reveal section[data-background-color="#56A5B9"] h1,
-            .reveal section[data-background-color="#56A5B9"] h2,
-            .reveal section[data-background-color="#56A5B9"] h3,
-            .reveal section[data-background-color="#56A5B9"] p {
-                color: #FFFFFF;
-            }
 
-            .bar-chart {
-                display: flex;
-                height: 200px;
-                justify-content: space-around;
-                border-left: 2px solid #333333;
-                border-bottom: 2px solid #333333;
-                padding: 10px;
-                margin-top: 10px;
-            }
-            .bar-group {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-end;
-                width: 40%;
-                height: 100%;
-            }
-            .bar {
-                width: 100%;
-                background-color: #ff79c6;
-                text-align: center;
-                color: white;
-                font-weight: bold;
-                padding-top: 5px;
-                border-radius: 5px 5px 0 0;
-                overflow: hidden;
-            }
-            .bar.win { background-color: #56A5B9; color: white; }
-            .bar.loss { background-color: #333333; }
-            .bar-label { margin-top: 10px; font-size: 0.8em; font-weight: bold; color: #333333; }
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>B2B Sales Prediction Thesis</title>
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/white.css" />
+    <link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --r-main-font: 'Montserrat', sans-serif;
+            --r-heading-font: 'Montserrat', sans-serif;
+            --r-background-color: #56A5B9;
+        }
 
-            @keyframes growLoss {
-                from { height: 0; color: transparent; }
-                to { height: 77%; color: white; }
-            }
-            @keyframes growWin {
-                from { height: 0; color: transparent; }
-                to { height: 22%; color: #282a36; }
-            }
-            .present .bar.loss {
-                animation: growLoss 1.2s ease-out 0.5s both;
-            }
-            .present .bar.win {
-                animation: growWin 1.2s ease-out 0.5s both;
-            }
+        body {
+            background-color: #56A5B9;
+        }
 
-            /* Generic Animated Bar */
-            .generic-bar-container {
-                display: flex;
-                height: 200px;
-                justify-content: space-around;
-                border-left: 2px solid #333333;
-                border-bottom: 2px solid #333333;
-                padding: 10px;
-                margin-top: 10px;
-                width: 90%;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .generic-bar-wrapper {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-end;
-                flex: 1;
-                margin: 0 10px;
-            }
-            .generic-bar {
-                width: 100%;
-                background-color: #56A5B9;
-                text-align: center;
-                color: white;
-                font-weight: bold;
-                padding-top: 5px;
-                border-radius: 5px 5px 0 0;
+        .reveal .slides section {
+            background-color: #ECF3F5;
+            padding: 20px 40px;
+            border-radius: 8px;
+            color: #333333;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4,
+        .reveal h5,
+        .reveal h6 {
+            color: #56A5B9;
+            text-transform: none;
+            margin-bottom: 15px;
+        }
+
+        .reveal section[data-background-color="#56A5B9"] {
+            background-color: transparent;
+            box-shadow: none;
+            color: #FFFFFF;
+        }
+
+        .reveal section[data-background-color="#56A5B9"] h1,
+        .reveal section[data-background-color="#56A5B9"] h2,
+        .reveal section[data-background-color="#56A5B9"] h3,
+        .reveal section[data-background-color="#56A5B9"] p {
+            color: #FFFFFF;
+        }
+
+        .bar-chart {
+            display: flex;
+            height: 200px;
+            justify-content: space-around;
+            border-left: 2px solid #333333;
+            border-bottom: 2px solid #333333;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 40%;
+            height: 100%;
+        }
+
+        .bar {
+            width: 100%;
+            background-color: #ff79c6;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            padding-top: 5px;
+            border-radius: 5px 5px 0 0;
+            overflow: hidden;
+        }
+
+        .bar.win {
+            background-color: #56A5B9;
+            color: white;
+        }
+
+        .bar.loss {
+            background-color: #333333;
+        }
+
+        .bar-label {
+            margin-top: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        @keyframes growLoss {
+            from {
                 height: 0;
-                overflow: hidden;
-                transition: height 1s ease-out 0.5s;
-            }
-            .present .generic-bar {
-                height: var(--target-height);
-            }
-            .generic-bar-label {
-                margin-top: 10px;
-                font-size: 0.5em;
-                font-weight: bold;
-                color: #333333;
-                text-align: center;
-            }
-            .generic-bar-value {
-                opacity: 0;
-                transition: opacity 0.5s ease-out 1.5s;
-            }
-            .present .generic-bar-value {
-                opacity: 1;
-            }
-            
-            /* Generic Animated Image */
-            .insight-image {
-                opacity: 0;
-                transform: translateY(20px);
-                transition: opacity 1s ease-out 0.5s, transform 1s ease-out 0.5s;
-                max-height: 250px;
-                border-radius: 8px;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-                margin-top: 10px;
-            }
-            .present .insight-image {
-                opacity: 1;
-                transform: translateY(0);
+                color: transparent;
             }
 
-            table.results-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-                font-size: 0.65em;
-            }
-            .results-table th, .results-table td {
-                border: 1px solid #CCCCCC;
-                padding: 6px 10px;
-                text-align: center;
-            }
-            .results-table th { background-color: #56A5B9; color: white; }
-            .results-table tr:nth-child(even) { background-color: #F8F9FA; }
-            .results-table tr.highlight { background-color: rgba(86, 165, 185, 0.2); }
-            .results-table tr:not(:first-child):hover { background-color: rgba(86, 165, 185, 0.4) !important; transition: background-color 0.1s; cursor: default; }
-
-            /* Modal Styles */
-            .matrix-modal {
-                display: none;
-                position: fixed;
-                top: 0; left: 0; width: 100vw; height: 100vh;
-                background: rgba(86, 165, 185, 0.95);
-                z-index: 9999;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-            }
-            .matrix-modal.active {
-                display: flex;
-            }
-            .matrix-modal-content {
-                display: flex;
-                width: 90%;
-                height: 85%;
-                gap: 20px;
-                justify-content: center;
-                align-items: center;
-            }
-            .matrix-modal-panel {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                height: 100%;
-            }
-            .matrix-modal-panel img {
-                max-width: 100%;
-                max-height: 90%;
-                object-fit: contain;
-                border-radius: 8px;
-            }
-            .matrix-modal-title {
+            to {
+                height: 77%;
                 color: white;
-                font-size: 1.5rem;
-                margin-bottom: 10px;
-                font-family: sans-serif;
             }
-            .close-modal {
-                position: absolute;
-                top: 20px;
-                right: 30px;
-                color: white;
-                font-size: 40px;
-                font-weight: bold;
-                cursor: pointer;
-                background: none;
-                border: none;
+        }
+
+        @keyframes growWin {
+            from {
+                height: 0;
+                color: transparent;
             }
-            .close-modal:hover { color: #ff5555; }
-            .clickable-matrix {
-                cursor: pointer;
-                transition: transform 0.2s;
+
+            to {
+                height: 22%;
+                color: #282a36;
             }
-            .clickable-matrix:hover {
-                transform: scale(1.02);
+        }
+
+        .present .bar.loss {
+            animation: growLoss 1.2s ease-out 0.5s both;
+        }
+
+        .present .bar.win {
+            animation: growWin 1.2s ease-out 0.5s both;
+        }
+
+        /* Generic Animated Bar */
+        .generic-bar-container {
+            display: flex;
+            height: 200px;
+            justify-content: space-around;
+            border-left: 2px solid #333333;
+            border-bottom: 2px solid #333333;
+            padding: 10px;
+            margin-top: 10px;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .generic-bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .generic-bar {
+            width: 100%;
+            background-color: #56A5B9;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            padding-top: 5px;
+            border-radius: 5px 5px 0 0;
+            height: 0;
+            overflow: hidden;
+            transition: height 1s ease-out 0.5s;
+        }
+
+        .present .generic-bar {
+            height: var(--target-height);
+        }
+
+        .generic-bar-label {
+            margin-top: 10px;
+            font-size: 0.5em;
+            font-weight: bold;
+            color: #333333;
+            text-align: center;
+        }
+
+        .generic-bar-value {
+            opacity: 0;
+            transition: opacity 0.5s ease-out 1.5s;
+        }
+
+        .present .generic-bar-value {
+            opacity: 1;
+        }
+
+        /* Generic Animated Image */
+        .insight-image {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out 0.5s, transform 1s ease-out 0.5s;
+            max-height: 250px;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            margin-top: 10px;
+        }
+
+        .present .insight-image {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        table.results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.65em;
+        }
+
+        .results-table th,
+        .results-table td {
+            border: 1px solid #CCCCCC;
+            padding: 6px 10px;
+            text-align: center;
+        }
+
+        .results-table th {
+            background-color: #56A5B9;
+            color: white;
+        }
+
+        .results-table tr:nth-child(even) {
+            background-color: #F8F9FA;
+        }
+
+        .results-table tr.highlight {
+            background-color: rgba(86, 165, 185, 0.2);
+        }
+
+        .results-table tr:not(:first-child):hover {
+            background-color: rgba(86, 165, 185, 0.4) !important;
+            transition: background-color 0.1s;
+            cursor: default;
+        }
+
+        /* Modal Styles */
+        .matrix-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(86, 165, 185, 0.95);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .matrix-modal.active {
+            display: flex;
+        }
+
+        .matrix-modal-content {
+            display: flex;
+            width: 90%;
+            height: 85%;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .matrix-modal-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+
+        .matrix-modal-panel img {
+            max-width: 100%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .matrix-modal-title {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-family: sans-serif;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .close-modal:hover {
+            color: #ff5555;
+        }
+
+        .clickable-matrix {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .clickable-matrix:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section data-background-color="#56A5B9">
+                <h3 style="color: #FFFFFF;">A Comparative Analysis of Machine Learning and Deep Learning Models in B2B
+                    Sales Prediction</h3>
+                <p style="color: #FFFFFF;"><small>Alejandro Axel Sanchez Silva</small></p>
+                <p style="color: #FFFFFF;"><small>Human-Centred AI Masters</small></p>
+                <aside class="notes">Welcome the committee. Introduce yourself, your thesis title, and the core
+                    objective: exploring how we can bridge the gap between complex AI and practical B2B sales
+                    forecasting.</aside>
+            </section>
+
+            <!-- Slide 2: Motivation -->
+            <section>
+                <h2>The Challenge in B2B Sales</h2>
+                <ul>
+                    <li class="fragment">Sales departments waste effort on low-conversion prospects.</li>
+                    <li class="fragment">Goal: Transform static pipelines into dynamic, probability-based early warning
+                        systems.</li>
+                    <li class="fragment">Requires interpretable models for real-world sales strategy.</li>
+                </ul>
+                <aside class="notes">B2B sales cycles are long and expensive. Sales
+                    teams waste huge amounts of time on leads that will never convert. The goal of this research is to
+                    transform static CRMs into dynamic early-warning systems using machine learning, but this requires
+                    models that are not just accurate, but also highly interpretable for sales teams.</aside>
+            </section>
+
+            <!-- Slide 2b: Research Questions -->
+            <section>
+                <h2>Research Questions</h2>
+                <ol style="font-size: 0.8em; line-height: 1.4;">
+                    <li class="fragment"><strong>Architecture:</strong> Do modern deep learning models outperform
+                        traditional ensemble methods on tabular CRM data?</li>
+                    <li class="fragment"><strong>Data Efficiency:</strong> How does reducing feature sets (from 100%
+                        down to 25%) impact predictive accuracy?</li>
+                    <li class="fragment"><strong>Interpretability (HCAIM):</strong> How can XAI tools convert
+                        mathematical outputs into human-readable recommendations?</li>
+                    <li class="fragment"><strong>Ethics (HCAIM):</strong> How do we balance high-accuracy modeling with
+                        B2B privacy and GDPR's "Right to an Explanation"?</li>
+                </ol>
+                <aside class="notes">Highlight the four pillars of the research: 1. Architecture: Tree-based models vs
+                    Deep Learning. 2. Data Efficiency: How much data do we actually need? 3. Interpretability: Can we
+                    explain the AI's decisions? 4. Ethics: Balancing accuracy with GDPR compliance.</aside>
+            </section>
+
+            <!-- Slide 3: Phase 1 - Data -->
+            <section>
+                <h2>Phase 1: Data Collection</h2>
+                <p>Dataset: 78,025 records from an automotive CRM.</p>
+                <p><strong>Severe Class Imbalance:</strong></p>
+                <div class="bar-chart">
+                    <div class="bar-group">
+                        <div class="bar loss" style="height: 100%;">60,398 (77%)</div>
+                        <div class="bar-label">Losses</div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar win" style="height: 29%;">17,627 (22%)</div>
+                        <div class="bar-label">Wins</div>
+                    </div>
+                </div>
+                <aside class="notes">Introduce the dataset: 78,000 CRM records. Class imbalance: 77% of opportunities
+                    are lost, and only 22% are won. A model could achieve 77% accuracy just by predicting "Loss" every
+                    time.
+                </aside>
+            </section>
+
+            <!-- Insight 1: Client History -->
+            <section>
+                <h2>Insight 1: Client History</h2>
+                <p>Returning clients exhibit win rates exceeding 82%.</p>
+                <div class="generic-bar-container">
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 17%; background-color: #E2B030;"><span
+                                class="generic-bar-value">17%</span></div>
+                        <div class="generic-bar-label">0 (New)</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 82%; background-color: #E2B030;"><span
+                                class="generic-bar-value">82%</span></div>
+                        <div class="generic-bar-label">1</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 73%; background-color: #E67A26;"><span
+                                class="generic-bar-value">73%</span></div>
+                        <div class="generic-bar-label">2</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 61%; background-color: #E65A26;"><span
+                                class="generic-bar-value">61%</span></div>
+                        <div class="generic-bar-label">3</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 46%; background-color: #D93826;"><span
+                                class="generic-bar-value">46%</span></div>
+                        <div class="generic-bar-label">4 (Returner)</div>
+                    </div>
+                </div>
+                <aside class="notes">This is our first major business insight. The data proves that returning clients
+                    are incredibly valuable, exhibiting win rates over 82%. This tells sales managers that retention and
+                    upselling are statistically safer bets than cold acquisition.</aside>
+            </section>
+
+            <!-- Insight 2: Channel Strategy -->
+            <section>
+                <h2>Insight 2: Channel Strategy</h2>
+                <p>Resellers outperform Field Sales by nearly 10%.</p>
+                <div class="generic-bar-container">
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 27.6%; background-color: #5B4086;"><span
+                                class="generic-bar-value">27.6%</span></div>
+                        <div class="generic-bar-label">Reseller</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 21.8%; background-color: #7979AA;"><span
+                                class="generic-bar-value">21.8%</span></div>
+                        <div class="generic-bar-label">Telesales</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 18.6%; background-color: #A3A3C2;"><span
+                                class="generic-bar-value">18.6%</span></div>
+                        <div class="generic-bar-label">Field Sales</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 18.5%; background-color: #C6C8D9;"><span
+                                class="generic-bar-value">18.5%</span></div>
+                        <div class="generic-bar-label">Other</div>
+                    </div>
+                    <div class="generic-bar-wrapper">
+                        <div class="generic-bar" style="--target-height: 6.3%; background-color: #EAEBF2;"><span
+                                class="generic-bar-value" style="color: #333">6.3%</span></div>
+                        <div class="generic-bar-label">Telecoverage</div>
+                    </div>
+                </div>
+                <aside class="notes">Looking at the route to market, Resellers outperform direct Field Sales by nearly
+                    10%. This suggests a potential reallocation of resources toward channel partners rather than direct
+                    outreach for this specific market.</aside>
+            </section>
+
+            <!-- Insight 3: Deal Velocity -->
+            <section>
+                <h2>Insight 3: Deal Velocity</h2>
+                <p>Successful deals have steady movement; lost deals stagnate with massive outliers.</p>
+                <img class="insight-image" src="images/Deal_Complexity.png" alt="Deal Complexity Box Plot">
+                <aside class="notes">Successful deals have a tight, consistent number of stage
+                    changes. Lost deals have massive outliers, meaning they stagnate and bounce around the pipeline. A
+                    high number of stage changes is a strong early indicator of a lost deal.</aside>
+            </section>
+
+            <!-- Insight 4: Opportunity Health -->
+            <section>
+                <h2>Insight 4: Opportunity Health</h2>
+                <p>High-dollar proposals face a much higher rejection rate.</p>
+                <img class="insight-image" src="images/Opportunity_Amount.png" alt="Opportunity Amount Box Plot">
+                <aside class="notes">Here we see that the median Opportunity Amount for a Loss is roughly double that of
+                    a Win. Extremely high-dollar proposals face massive rejection rates, suggesting that breaking large
+                    deals into smaller, phased proposals might increase win probabilities.</aside>
+            </section>
+
+            <!-- Slide 4: Phase 1 - Preprocessing -->
+            <section>
+                <h2>Phase 1: Feature Selection</h2>
+                <p>Correlation-Based Redundancy Removal to mitigate multicollinearity.</p>
+                <ul>
+                    <li class="fragment">Computed Pearson correlation matrix.</li>
+                    <li class="fragment">Generated experimental subsets based on correlation limits:</li>
+                    <li class="fragment"><strong>75% Subset:</strong> Moderate filter, preserves majority of signal.
+                    </li>
+                    <li class="fragment"><strong>25% Subset:</strong> Aggressive filtration, nearly independent
+                        variables.</li>
+                </ul>
+                <aside class="notes">Moving to the technical methodology. To reduce noise, we used Pearson correlation
+                    to remove redundant variables. We created two experimental subsets: a 75% subset (moderate filter)
+                    and a 25% subset (aggressive filter).
+                    <br>
+                    (PCC) is a statistical metric used to measure and reflect the degree of linear correlation (or
+                    association) between two variables
+                </aside>
+            </section>
+
+            <!-- Slide 4a: Phase 1 - Full Matrix -->
+            <section>
+                <h2>Full Correlation Matrix</h2>
+                <p>All attributes included (100% Features)</p>
+                <img class="clickable-matrix" src="images/Full_Features_correlation.jpg" alt="Full Correlation Matrix"
+                    style="max-height: 350px; border-radius: 8px;"
+                    onclick="openSingleImageModal(this.src, 'Full Correlation Matrix')">
+                <aside class="notes">This is the baseline, 100% feature set. You can see dense clusters of highly
+                    correlated variables which can confuse certain models.</aside>
+            </section>
+
+            <!-- Slide 4b: Phase 1 - 75% Matrix -->
+            <section>
+                <h2>Correlation Matrix: 75% Threshold</h2>
+                <p>Redundant variables removed (Moderate Filter)</p>
+                <div style="display: flex; justify-content: center; gap: 20px;">
+                    <div style="text-align: center; width: 45%;">
+                        <p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 75%</p>
+                        <img class="clickable-matrix" src="images/ADASYN_75pct_Features_correlation.jpg"
+                            alt="ADASYN 75% Matrix" style="max-height: 250px; border-radius: 8px;"
+                            onclick="openModal(this.src, 'ADASYN 75% Threshold')">
+                    </div>
+                    <div style="text-align: center; width: 45%;">
+                        <p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 75%</p>
+                        <img class="clickable-matrix" src="images/SMOTE_75pct_Features_correlation.jpg"
+                            alt="SMOTE 75% Matrix" style="max-height: 250px; border-radius: 8px;"
+                            onclick="openModal(this.src, 'SMOTE 75% Threshold')">
+                    </div>
+                </div>
+                <aside class="notes">After applying the 75% filter, we remove the most obvious redundancies while
+                    preserving the majority of the predictive signal.</aside>
+            </section>
+
+            <!-- Slide 4c: Phase 1 - 25% Matrix -->
+            <section>
+                <h2>Correlation Matrix: 25% Threshold</h2>
+                <p>Aggressive filtration (Nearly independent variables)</p>
+                <div style="display: flex; justify-content: center; gap: 20px;">
+                    <div style="text-align: center; width: 45%;">
+                        <p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 25%</p>
+                        <img class="clickable-matrix" src="images/ADASYN_25pct_Features_correlation.jpg"
+                            alt="ADASYN 25% Matrix" style="max-height: 250px; border-radius: 8px;"
+                            onclick="openModal(this.src, 'ADASYN 25% Threshold')">
+                    </div>
+                    <div style="text-align: center; width: 45%;">
+                        <p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 25%</p>
+                        <img class="clickable-matrix" src="images/SMOTE_25pct_Features_correlation.jpg"
+                            alt="SMOTE 25% Matrix" style="max-height: 250px; border-radius: 8px;"
+                            onclick="openModal(this.src, 'SMOTE 25% Threshold')">
+                    </div>
+                </div>
+                <aside class="notes">The 25% filter leaves us with nearly independent variables. This tests the "Data
+                    Efficiency" research question: Can our models survive on bare-minimum information?</aside>
+            </section>
+
+            <!-- Slide 5: Phase 2 & 3 - Partitioning -->
+            <section>
+                <h2>Phase 2 & 3: Partitioning</h2>
+                <ul>
+                    <li>80/20 Stratified Train-Test Split.</li>
+                    <li class="fragment"><strong>Training Data (80%):</strong> Used for model learning and balancing.
+                    </li>
+                    <li class="fragment"><strong>Testing Data (20%):</strong> Completely untouched, preserves native
+                        "Won"/"Loss" distribution for honest evaluation.</li>
+                </ul>
+                <aside class="notes">Standard 80/20 train-test split, stratified to ensure the 77/22 class imbalance is
+                    maintained in both sets.</aside>
+            </section>
+
+            <!-- Slide 6: Phase 2 & 3 - Balancing -->
+            <section>
+                <h2>Phase 2 & 3: Data Balancing</h2>
+                <p>Applied <strong>strictly</strong> to Training Data.</p>
+                <ul>
+                    <li class="fragment"><strong>SMOTE:</strong> Synthetic Minority Over-sampling Technique via
+                        nearest-neighbor interpolation.</li>
+                    <li class="fragment"><strong>ADASYN:</strong> Adaptive Synthetic sampling focusing on hard-to-learn
+                        minority instances.</li>
+                </ul>
+                <aside class="notes">To fix the class imbalance, I tested SMOTE and ADASYN. SMOTE synthesizes points
+                    between existing minority examples, while ADASYN focuses specifically on the "hard-to-learn"
+                    examples near the decision boundary.</aside>
+            </section>
+
+            <!-- Slide 7: Phase 4 - Modeling -->
+            <section>
+                <h2>Phase 4: AI Modeling & Tuning</h2>
+                <ul>
+                    <li class="fragment">Pipeline developed in Python 3 (scikit-learn, XGBoost, PyTorch).</li>
+                    <li class="fragment">Hyperparameter tuning optimized for <strong>F1 Score</strong> to balance
+                        precision and recall.</li>
+                    <li class="fragment">Overcoming the risk of models simply guessing "Loss" every time.</li>
+                </ul>
+                <aside class="notes">Explain that the pipeline was built in Python. Models were optimized
+                    for the F1 score, not just Accuracy, because I need a balance between Precision and Recall to avoid
+                    the "always predict Loss" trap.</aside>
+            </section>
+
+            <!-- Slide 8: Phase 4 - Models -->
+            <section>
+                <h2>Phase 4: Models Compared</h2>
+                <div style="display: flex; justify-content: space-between; text-align: left; margin-top: 20px;">
+                    <div style="width: 48%; padding: 10px; border: 1px solid #44475a; border-radius: 8px;">
+                        <h4 style="color: #8be9fd;">Traditional Machine Learning</h4>
+                        <ul style="font-size: 0.8em;">
+                            <li><strong>Random Forest:</strong> Bagging ensemble, stable baseline.</li>
+                            <li><strong>XGBoost:</strong> Gradient-boosting framework. The benchmark standard.</li>
+                        </ul>
+                    </div>
+                    <div style="width: 48%; padding: 10px; border: 1px solid #44475a; border-radius: 8px;">
+                        <h4 style="color: #ff79c6;">Modern Deep Learning</h4>
+                        <ul style="font-size: 0.8em;">
+                            <li><strong>FT-Transformer:</strong> Feature tokenization with multi-head self-attention.
+                            </li>
+                            <li><strong>TabNet:</strong> Sequential sparse attention mechanism.</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">Introduction of the models: Random Forest and XGBoost.
+                    Deep Learning designed for tabular data: FT-Transformer (attention mechanism) and TabNet (sequential
+                    sparse attention).</aside>
+            </section>
+
+            <!-- Slide 9: Phase 5 - Evaluation -->
+            <section>
+                <h2>Phase 5: Evaluation Criteria</h2>
+                <ul>
+                    <li><strong>Accuracy:</strong> Percentage of overall correct predictions (can be misleading).</li>
+                    <li class="fragment"><strong>F1 Score:</strong> Balance of Precision (correct wins) and Recall
+                        (catching all possible wins).</li>
+                    <li class="fragment"><strong>ROC-AUC:</strong> Threshold-independent discriminative ability (1.0 is
+                        perfect).</li>
+                </ul>
+                <aside class="notes">Reiterate why we use multiple metrics. Accuracy can hide flaws. F1 Score proves the
+                    model can actually identify "Wins". ROC-AUC shows overall discriminative power.</aside>
+            </section>
+
+            <!-- Slide 10: Phase 5 - Top Models -->
+            <section>
+                <h2>Top Performing Configurations</h2>
+                <div style="display: flex; justify-content: flex-end; width: 100%; margin-bottom: 5px;">
+                    <button
+                        style="padding: 5px 12px; background-color: #56A5B9; border: none; border-radius: 5px; color: #FFFFFF; font-weight: bold; font-size: 0.6em; cursor: pointer; transition: transform 0.2s;"
+                        onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"
+                        onclick="openFullTableModal()">View Full Ranking</button>
+                </div>
+                <table class="results-table" style="margin-top: 0;">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Configuration</th>
+                        <th>Accuracy</th>
+                        <th>F1 Score</th>
+                        <th>ROC-AUC</th>
+                    </tr>
+                    <tr class="highlight">
+                        <td>1</td>
+                        <td>XGBoost (SMOTE) - 100% Features</td>
+                        <td>89.57%</td>
+                        <td>0.7576</td>
+                        <td>0.9390</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Random Forest (SMOTE) - 100% Features</td>
+                        <td>87.61%</td>
+                        <td>0.7195</td>
+                        <td>0.9250</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>TabNet (SMOTE) - 75% Features</td>
+                        <td>86.54%</td>
+                        <td>0.6979</td>
+                        <td>0.9015</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>FT-Transformer (ADASYN) - 75% Features</td>
+                        <td>86.81%</td>
+                        <td>0.6830</td>
+                        <td>0.9083</td>
+                    </tr>
+                </table>
+                <aside class="notes"> XGBoost with SMOTE on 100% features won overall. Mention
+                    that you can click the button to see the full 24-configuration ranking during Q&A if needed.</aside>
+            </section>
+
+            <!-- Slide 11: Phase 5 - Insights -->
+            <section>
+                <h3>The "Deep Learning Gap"</h3>
+                <p><strong>Result:</strong> Traditional tree-based models decisively outclassed Modern Deep Learning.
+                </p>
+                <ul class="fragment">
+                    <li>XGBoost proved highly precise in distinguishing success vs. failure.</li>
+                    <li>Deep Learning models plateaued (~86.8% accuracy) and struggled severely with full feature sets.
+                    </li>
+                    <li><strong>Data Efficiency:</strong> Top models maintained accuracy at 75% features but collapsed
+                        at 25%.</li>
+                </ul>
+                <aside class="notes">Address the first Research Question. Traditional tree-based models decisively beat
+                    Modern Deep Learning. XGBoost thrived, while FT-Transformer and TabNet struggled to exceed 86.8%
+                    accuracy. Also note Data Efficiency: XGBoost survived the 25% feature reduction much better than the
+                    neural networks.</aside>
+            </section>
+
+            <!-- Slide 12: Phase 5 - XAI -->
+            <section>
+                <h2>Phase 5: Explainable AI (XAI)</h2>
+                <p>Transforming complex models into "human-readable" tools.</p>
+                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                    <div style="width: 32%; text-align: center;">
+                        <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">Permutation Importance</p>
+                        <img class="clickable-matrix" src="images/XGBoost_Permutation.jpg" alt="Permutation Importance"
+                            style="max-height: 200px; border-radius: 8px;"
+                            onclick="openSingleImageModal(this.src, 'Permutation Importance')">
+                    </div>
+                    <div style="width: 32%; text-align: center;">
+                        <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">SHAP</p>
+                        <img class="clickable-matrix" src="images/XGBoost_SHAP.jpg" alt="SHAP"
+                            style="max-height: 200px; border-radius: 8px;"
+                            onclick="openSingleImageModal(this.src, 'SHAP Analysis')">
+                    </div>
+                    <div style="width: 32%; text-align: center;">
+                        <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">LIME</p>
+                        <img class="clickable-matrix" src="images/XGBoost_LIME.jpg" alt="LIME"
+                            style="max-height: 200px; border-radius: 8px;"
+                            onclick="openSingleImageModal(this.src, 'LIME Analysis')">
+                    </div>
+                </div>
+                <aside class="notes">Addressing the Interpretability question. I applied Permutation Importance, SHAP,
+                    and
+                    LIME to XGBoost. Permutation tells us global feature importance. SHAP gives us exact directional
+                    impact (e.g., higher stage changes = negative impact). LIME provides local, per-deal explanations
+                    for the sales rep on the floor.</aside>
+            </section>
+
+
+            <!-- Slide 14: Phase 5 - GDPR -->
+            <section>
+                <h3>Accuracy vs. GDPR Compliance</h3>
+                <p>The Ethical Accuracy-Calibration Paradox</p>
+                <ul class="fragment">
+                    <li><strong>XGBoost:</strong> Most accurate overall.</li>
+                    <li><strong>Random Forest:</strong> Yielded a vastly lower Expected Calibration Error (ECE - 0.0326
+                        vs 0.0674).</li>
+                    <li><em>Takeaway:</em> Random Forest provides more "trustworthy" probability scores, aligning better
+                        with GDPR's "Right to an Explanation".</li>
+                </ul>
+                <aside class="notes">Address the Ethics question. While XGBoost is the most accurate, Random Forest hads
+                    a much better Expected Calibration Error (ECE). This means Random Forest's probability scores are
+                    more trustworthy. If a client demands a GDPR explanation for an automated rejection, Random Forest
+                    is arguably the safer, more ethical choice despite a tiny drop in raw accuracy.
+                    <br>
+                    Expected Calibration Error (ECE) is a metric used to evaluate how well a model's predicted
+                    probabilities
+                    reflect the actual probabilities of outcomes
+                    <br>
+                    ECE is a metric that quantifies the gap between a model's predicted confidence (the probability it
+                    assigns to its prediction) and its actual accuracy.
+                    <br>
+                    A perfectly calibrated model has an ECE of 0, meaning its confidence always perfectly matches its
+                    accuracy.
+                </aside>
+            </section>
+
+            <!-- Slide 15: Conclusion -->
+            <section>
+                <h2>Conclusion & Future Work</h2>
+                <ul>
+                    <li>Gradient Boosting (XGBoost) remains the apex for tabular B2B forecasting.</li>
+                    <li>Transparency and Model Actionability dictate practical success.</li>
+                    <li><strong>Future Work:</strong> Incorporating unstructured data (emails/transcripts) via NLP and
+                        expanding hardware scaling.</li>
+                </ul>
+                <aside class="notes">Wrap up. Tree models rule tabular CRM data. We proved high accuracy is possible,
+                    but we must choose models that offer XAI capabilities to satisfy GDPR and build trust with human
+                    sales teams. Future work could explore Temporal Neural Networks for time-series pipeline data. Thank
+                    the audience.</aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="dist/plugin/notes.js"></script>
+    <script src="dist/plugin/markdown.js"></script>
+    <script src="dist/plugin/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+        });
+    </script>
+
+    <!-- Matrix Comparison Modal -->
+    <div id="matrixModal" class="matrix-modal">
+        <button class="close-modal" onclick="closeModal()">&times;</button>
+        <div class="matrix-modal-content">
+            <div class="matrix-modal-panel">
+                <div class="matrix-modal-title">Original (100% Features)</div>
+                <img src="images/Full_Features_correlation.jpg" alt="Original Matrix">
+            </div>
+            <div class="matrix-modal-panel">
+                <div id="modalCompareTitle" class="matrix-modal-title">Compared Matrix</div>
+                <img id="modalCompareImg" src="" alt="Compared Matrix">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(imgSrc, title) {
+            document.getElementById('modalCompareImg').src = imgSrc;
+            document.getElementById('modalCompareTitle').innerText = title;
+            document.getElementById('matrixModal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('matrixModal').classList.remove('active');
+        }
+
+        // Close on background click
+        document.getElementById('matrixModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Esc key close
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                if (typeof closeFullTableModal === 'function') closeFullTableModal();
+                if (typeof closeSingleImageModal === 'function') closeSingleImageModal();
             }
-        </style>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				
-				<!-- Slide 1: Title -->
-				<section data-background-color="#56A5B9">
-					<h3 style="color: #FFFFFF;">A Comparative Analysis of Machine Learning and Deep Learning Architectures in B2B Sales Prediction</h3>
-					<p style="color: #FFFFFF;"><small>Alejandro Axel Sanchez Silva</small></p>
-					<p style="color: #FFFFFF;"><small>Human-Centred AI Masters</small></p>
-				</section>
-				
-				<!-- Slide 2: Motivation -->
-				<section>
-					<h2>The Challenge in B2B Sales</h2>
-					<ul>
-						<li class="fragment">Sales departments waste effort on low-conversion prospects.</li>
-						<li class="fragment">Goal: Transform static pipelines into dynamic, probability-based early warning systems.</li>
-                        <li class="fragment">Requires interpretable models for real-world sales strategy.</li>
-					</ul>
-				</section>
+        });
+    </script>
 
-				<!-- Slide 2b: Research Questions -->
-				<section>
-					<h2>Research Questions</h2>
-					<ol style="font-size: 0.8em; line-height: 1.4;">
-						<li class="fragment"><strong>Architecture:</strong> Do modern deep learning architectures outperform traditional ensemble methods on tabular CRM data?</li>
-						<li class="fragment"><strong>Data Efficiency:</strong> How does reducing feature sets (from 100% down to 25%) impact predictive accuracy?</li>
-						<li class="fragment"><strong>Interpretability (HCAIM):</strong> How can XAI tools convert mathematical outputs into human-readable recommendations?</li>
-						<li class="fragment"><strong>Ethics (HCAIM):</strong> How do we balance high-accuracy modeling with B2B privacy and GDPR's "Right to an Explanation"?</li>
-					</ol>
-				</section>
+    <!-- Full Table Modal -->
+    <div id="fullTableModal" class="matrix-modal">
+        <button class="close-modal" onclick="closeFullTableModal()">&times;</button>
+        <div class="matrix-modal-content"
+            style="flex-direction: column; width: 85%; background: #ECF3F5; padding: 20px; border-radius: 8px; overflow-y: auto; max-height: 90%; justify-content: flex-start;">
+            <h3 style="color: #56A5B9; margin-bottom: 20px;">Table 5.1: Full Model Ranking</h3>
+            <table class="results-table"
+                style="width: 100%; font-size: 0.9em; margin: 0; background-color: transparent; color: #333333;">
+                <tr>
+                    <th>Rank</th>
+                    <th>Model Configuration</th>
+                    <th>Accuracy</th>
+                    <th>F1 Score</th>
+                    <th>ROC-AUC</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>XGBoost (SMOTE) - 100% Features</td>
+                    <td>89.57%</td>
+                    <td>0.7576</td>
+                    <td>0.9390</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>XGBoost (ADASYN) - 100% Features</td>
+                    <td>89.50%</td>
+                    <td>0.7554</td>
+                    <td>0.9387</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>XGBoost (SMOTE) - 75% Features</td>
+                    <td>89.50%</td>
+                    <td>0.7551</td>
+                    <td>0.9385</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>XGBoost (ADASYN) - 75% Features</td>
+                    <td>89.44%</td>
+                    <td>0.7533</td>
+                    <td>0.9385</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Random Forest (SMOTE) - 100% Features</td>
+                    <td>87.61%</td>
+                    <td>0.7195</td>
+                    <td>0.9250</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Random Forest (ADASYN) - 100% Features</td>
+                    <td>87.60%</td>
+                    <td>0.7186</td>
+                    <td>0.9248</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Random Forest (SMOTE) - 75% Features</td>
+                    <td>87.53%</td>
+                    <td>0.7157</td>
+                    <td>0.9242</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Random Forest (ADASYN) - 75% Features</td>
+                    <td>87.39%</td>
+                    <td>0.7121</td>
+                    <td>0.9234</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>TabNet (SMOTE) - 75% Features</td>
+                    <td>86.54%</td>
+                    <td>0.6979</td>
+                    <td>0.9015</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>TabNet (ADASYN) - 75% Features</td>
+                    <td>86.53%</td>
+                    <td>0.6976</td>
+                    <td>0.9015</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>TabNet (SMOTE) - 100% Features</td>
+                    <td>86.15%</td>
+                    <td>0.6865</td>
+                    <td>0.8927</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>TabNet (ADASYN) - 100% Features</td>
+                    <td>85.94%</td>
+                    <td>0.6811</td>
+                    <td>0.8918</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>XGBoost (ADASYN) - 25% Features</td>
+                    <td>86.91%</td>
+                    <td>0.6811</td>
+                    <td>0.8879</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>XGBoost (SMOTE) - 25% Features</td>
+                    <td>86.88%</td>
+                    <td>0.6806</td>
+                    <td>0.8878</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>FT-Transformer (ADASYN) - 75% Features</td>
+                    <td>86.81%</td>
+                    <td>0.6830</td>
+                    <td>0.9083</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>FT-Transformer (SMOTE) - 75% Features</td>
+                    <td>86.66%</td>
+                    <td>0.6784</td>
+                    <td>0.9085</td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td>FT-Transformer (ADASYN) - 100% Features</td>
+                    <td>86.30%</td>
+                    <td>0.6698</td>
+                    <td>0.9018</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td>Random Forest (SMOTE) - 25% Features</td>
+                    <td>86.19%</td>
+                    <td>0.6685</td>
+                    <td>0.8804</td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td>Random Forest (ADASYN) - 25% Features</td>
+                    <td>86.20%</td>
+                    <td>0.6680</td>
+                    <td>0.8802</td>
+                </tr>
+                <tr>
+                    <td>20</td>
+                    <td>FT-Transformer (SMOTE) - 100% Features</td>
+                    <td>86.17%</td>
+                    <td>0.6657</td>
+                    <td>0.9009</td>
+                </tr>
+                <tr>
+                    <td>21</td>
+                    <td>TabNet (SMOTE) - 25% Features</td>
+                    <td>82.72%</td>
+                    <td>0.6276</td>
+                    <td>0.8404</td>
+                </tr>
+                <tr>
+                    <td>22</td>
+                    <td>TabNet (ADASYN) - 25% Features</td>
+                    <td>82.37%</td>
+                    <td>0.6223</td>
+                    <td>0.8404</td>
+                </tr>
+                <tr>
+                    <td>23</td>
+                    <td>FT-Transformer (ADASYN) - 25% Features</td>
+                    <td>84.14%</td>
+                    <td>0.6033</td>
+                    <td>0.8521</td>
+                </tr>
+                <tr>
+                    <td>24</td>
+                    <td>FT-Transformer (SMOTE) - 25% Features</td>
+                    <td>83.99%</td>
+                    <td>0.5969</td>
+                    <td>0.8524</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
-				<!-- Slide 3: Phase 1 - Data -->
-				<section>
-					<h2>Phase 1: Data Collection</h2>
-					<p>Dataset: 78,025 records from an automotive CRM.</p>
-					<p><strong>Severe Class Imbalance:</strong></p>
-                    <div class="bar-chart">
-                        <div class="bar-group">
-                            <div class="bar loss" style="height: 100%;">60,398 (77%)</div>
-                            <div class="bar-label">Losses</div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar win" style="height: 29%;">17,627 (22%)</div>
-                            <div class="bar-label">Wins</div>
-                        </div>
-                    </div>
-				</section>
+    <script>
+        function openFullTableModal() {
+            document.getElementById('fullTableModal').classList.add('active');
+        }
+        function closeFullTableModal() {
+            document.getElementById('fullTableModal').classList.remove('active');
+        }
 
-				<!-- Insight 1: Client History -->
-				<section>
-					<h2>Insight 1: Client History</h2>
-                    <p>Returning clients exhibit win rates exceeding 82%.</p>
-					<div class="generic-bar-container">
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 17%; background-color: #E2B030;"><span class="generic-bar-value">17%</span></div>
-                            <div class="generic-bar-label">0 (New)</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 82%; background-color: #E2B030;"><span class="generic-bar-value">82%</span></div>
-                            <div class="generic-bar-label">1</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 73%; background-color: #E67A26;"><span class="generic-bar-value">73%</span></div>
-                            <div class="generic-bar-label">2</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 61%; background-color: #E65A26;"><span class="generic-bar-value">61%</span></div>
-                            <div class="generic-bar-label">3</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 46%; background-color: #D93826;"><span class="generic-bar-value">46%</span></div>
-                            <div class="generic-bar-label">4 (Returner)</div>
-                        </div>
-                    </div>
-				</section>
+        // Close on background click
+        document.getElementById('fullTableModal').addEventListener('click', function (e) {
+            if (e.target === this) closeFullTableModal();
+        });
+    </script>
 
-				<!-- Insight 2: Channel Strategy -->
-				<section>
-					<h2>Insight 2: Channel Strategy</h2>
-                    <p>Resellers outperform Field Sales by nearly 10%.</p>
-					<div class="generic-bar-container">
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 27.6%; background-color: #5B4086;"><span class="generic-bar-value">27.6%</span></div>
-                            <div class="generic-bar-label">Reseller</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 21.8%; background-color: #7979AA;"><span class="generic-bar-value">21.8%</span></div>
-                            <div class="generic-bar-label">Telesales</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 18.6%; background-color: #A3A3C2;"><span class="generic-bar-value">18.6%</span></div>
-                            <div class="generic-bar-label">Field Sales</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 18.5%; background-color: #C6C8D9;"><span class="generic-bar-value">18.5%</span></div>
-                            <div class="generic-bar-label">Other</div>
-                        </div>
-                        <div class="generic-bar-wrapper">
-                            <div class="generic-bar" style="--target-height: 6.3%; background-color: #EAEBF2;"><span class="generic-bar-value" style="color: #333">6.3%</span></div>
-                            <div class="generic-bar-label">Telecoverage</div>
-                        </div>
-                    </div>
-				</section>
+    <!-- Single Image Modal -->
+    <div id="singleImageModal" class="matrix-modal">
+        <button class="close-modal" onclick="closeSingleImageModal()">&times;</button>
+        <div class="matrix-modal-content"
+            style="width: 90%; height: 90%; justify-content: center; flex-direction: column;">
+            <div id="singleImageTitle" class="matrix-modal-title"></div>
+            <img id="singleImageImg" src="" alt="Enlarged View"
+                style="max-width: 100%; max-height: 85%; object-fit: contain; border-radius: 8px;">
+        </div>
+    </div>
 
-				<!-- Insight 3: Deal Velocity -->
-				<section>
-					<h2>Insight 3: Deal Velocity</h2>
-                    <p>Successful deals have steady movement; lost deals stagnate with massive outliers.</p>
-                    <img class="insight-image" src="images/Deal_Complexity.png" alt="Deal Complexity Box Plot">
-				</section>
+    <script>
+        function openSingleImageModal(imgSrc, title) {
+            document.getElementById('singleImageImg').src = imgSrc;
+            document.getElementById('singleImageTitle').innerText = title;
+            document.getElementById('singleImageModal').classList.add('active');
+        }
+        function closeSingleImageModal() {
+            document.getElementById('singleImageModal').classList.remove('active');
+        }
 
-				<!-- Insight 4: Opportunity Health -->
-				<section>
-					<h2>Insight 4: Opportunity Health</h2>
-                    <p>High-dollar proposals face a much higher rejection rate.</p>
-                    <img class="insight-image" src="images/Opportunity_Amount.png" alt="Opportunity Amount Box Plot">
-				</section>
+        // Close on background click
+        document.getElementById('singleImageModal').addEventListener('click', function (e) {
+            if (e.target === this) closeSingleImageModal();
+        });
+    </script>
+</body>
 
-				<!-- Slide 4: Phase 1 - Preprocessing -->
-				<section>
-					<h2>Phase 1: Feature Selection</h2>
-                    <p>Correlation-Based Redundancy Removal to mitigate multicollinearity.</p>
-					<ul>
-						<li class="fragment">Computed Pearson correlation matrix.</li>
-						<li class="fragment">Generated experimental subsets based on correlation limits:</li>
-						<li class="fragment"><strong>75% Subset:</strong> Moderate filter, preserves majority of signal.</li>
-						<li class="fragment"><strong>25% Subset:</strong> Aggressive filtration, nearly independent variables.</li>
-					</ul>
-				</section>
-
-				<!-- Slide 4a: Phase 1 - Full Matrix -->
-				<section>
-					<h2>Full Correlation Matrix</h2>
-					<p>All attributes included (100% Features)</p>
-					<img src="images/Full_Features_correlation.jpg" alt="Full Correlation Matrix" style="max-height: 350px; border-radius: 8px;">
-				</section>
-
-				<!-- Slide 4b: Phase 1 - 75% Matrix -->
-				<section>
-					<h2>Correlation Matrix: 75% Threshold</h2>
-					<p>Redundant variables removed (Moderate Filter)</p>
-					<div style="display: flex; justify-content: center; gap: 20px;">
-						<div style="text-align: center; width: 45%;">
-							<p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 75%</p>
-							<img class="clickable-matrix" src="images/ADASYN_75pct_Features_correlation.jpg" alt="ADASYN 75% Matrix" style="max-height: 250px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 75% Threshold')">
-						</div>
-						<div style="text-align: center; width: 45%;">
-							<p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 75%</p>
-							<img class="clickable-matrix" src="images/SMOTE_75pct_Features_correlation.jpg" alt="SMOTE 75% Matrix" style="max-height: 250px; border-radius: 8px;" onclick="openModal(this.src, 'SMOTE 75% Threshold')">
-						</div>
-					</div>
-				</section>
-
-				<!-- Slide 4c: Phase 1 - 25% Matrix -->
-				<section>
-					<h2>Correlation Matrix: 25% Threshold</h2>
-					<p>Aggressive filtration (Nearly independent variables)</p>
-					<div style="display: flex; justify-content: center; gap: 20px;">
-						<div style="text-align: center; width: 45%;">
-							<p style="font-size: 0.8em; margin-bottom: 5px;">ADASYN 25%</p>
-							<img class="clickable-matrix" src="images/ADASYN_25pct_Features_correlation.jpg" alt="ADASYN 25% Matrix" style="max-height: 250px; border-radius: 8px;" onclick="openModal(this.src, 'ADASYN 25% Threshold')">
-						</div>
-						<div style="text-align: center; width: 45%;">
-							<p style="font-size: 0.8em; margin-bottom: 5px;">SMOTE 25%</p>
-							<img class="clickable-matrix" src="images/SMOTE_25pct_Features_correlation.jpg" alt="SMOTE 25% Matrix" style="max-height: 350px; border-radius: 8px;" onclick="openModal(this.src, 'SMOTE 25% Threshold')">
-						</div>
-					</div>
-				</section>
-
-				<!-- Slide 5: Phase 2 & 3 - Partitioning -->
-				<section>
-					<h2>Phase 2 & 3: Partitioning</h2>
-					<ul>
-						<li>80/20 Stratified Train-Test Split.</li>
-						<li class="fragment"><strong>Training Data (80%):</strong> Used for model learning and balancing.</li>
-						<li class="fragment"><strong>Testing Data (20%):</strong> Completely untouched, preserves native "Won"/"Loss" distribution for honest evaluation.</li>
-					</ul>
-				</section>
-
-				<!-- Slide 6: Phase 2 & 3 - Balancing -->
-				<section>
-					<h2>Phase 2 & 3: Data Balancing</h2>
-                    <p>Applied <strong>strictly</strong> to Training Data.</p>
-					<ul>
-						<li class="fragment"><strong>SMOTE:</strong> Synthetic Minority Over-sampling Technique via nearest-neighbor interpolation.</li>
-						<li class="fragment"><strong>ADASYN:</strong> Adaptive Synthetic sampling focusing on hard-to-learn minority instances.</li>
-					</ul>
-				</section>
-
-				<!-- Slide 7: Phase 4 - Modeling -->
-				<section>
-					<h2>Phase 4: AI Modeling & Tuning</h2>
-					<ul>
-						<li class="fragment">Pipeline developed in Python 3 (scikit-learn, XGBoost, PyTorch).</li>
-						<li class="fragment">Hyperparameter tuning optimized for <strong>F1 Score</strong> to balance precision and recall.</li>
-						<li class="fragment">Overcoming the risk of models simply guessing "Loss" every time.</li>
-					</ul>
-				</section>
-
-				<!-- Slide 8: Phase 4 - Architectures -->
-				<section>
-					<h2>Phase 4: Architectures Compared</h2>
-                    <div style="display: flex; justify-content: space-between; text-align: left; margin-top: 20px;">
-                        <div style="width: 48%; padding: 10px; border: 1px solid #44475a; border-radius: 8px;">
-                            <h4 style="color: #8be9fd;">Traditional Machine Learning</h4>
-                            <ul style="font-size: 0.8em;">
-                                <li><strong>Random Forest:</strong> Bagging ensemble, stable baseline.</li>
-                                <li><strong>XGBoost:</strong> Gradient-boosting framework. The benchmark standard.</li>
-                            </ul>
-                        </div>
-                        <div style="width: 48%; padding: 10px; border: 1px solid #44475a; border-radius: 8px;">
-                            <h4 style="color: #ff79c6;">Modern Deep Learning</h4>
-                            <ul style="font-size: 0.8em;">
-                                <li><strong>FT-Transformer:</strong> Feature tokenization with multi-head self-attention.</li>
-                                <li><strong>TabNet:</strong> Sequential sparse attention mechanism.</li>
-                            </ul>
-                        </div>
-                    </div>
-				</section>
-
-				<!-- Slide 9: Phase 5 - Evaluation -->
-				<section>
-					<h2>Phase 5: Evaluation Criteria</h2>
-					<ul>
-						<li><strong>Accuracy:</strong> Percentage of overall correct predictions (can be misleading).</li>
-						<li class="fragment"><strong>F1 Score:</strong> Balance of Precision (correct wins) and Recall (catching all possible wins).</li>
-						<li class="fragment"><strong>ROC-AUC:</strong> Threshold-independent discriminative ability (1.0 is perfect).</li>
-					</ul>
-				</section>
-
-				<!-- Slide 10: Phase 5 - Top Models -->
-				<section>
-					<h2>Top Performing Configurations</h2>
-                    <div style="display: flex; justify-content: flex-end; width: 100%; margin-bottom: 5px;">
-                        <button style="padding: 5px 12px; background-color: #56A5B9; border: none; border-radius: 5px; color: #FFFFFF; font-weight: bold; font-size: 0.6em; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="openFullTableModal()">View Full Ranking</button>
-                    </div>
-                    <table class="results-table" style="margin-top: 0;">
-                        <tr>
-                            <th>Rank</th>
-                            <th>Configuration</th>
-                            <th>Accuracy</th>
-                            <th>F1 Score</th>
-                            <th>ROC-AUC</th>
-                        </tr>
-                        <tr class="highlight">
-                            <td>1</td>
-                            <td>XGBoost (SMOTE) - 100% Features</td>
-                            <td>89.57%</td>
-                            <td>0.7576</td>
-                            <td>0.9390</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Random Forest (SMOTE) - 100% Features</td>
-                            <td>87.61%</td>
-                            <td>0.7195</td>
-                            <td>0.9250</td>
-                        </tr>
-                        <tr>
-                            <td>9</td>
-                            <td>TabNet (SMOTE) - 75% Features</td>
-                            <td>86.54%</td>
-                            <td>0.6979</td>
-                            <td>0.9015</td>
-                        </tr>
-                        <tr>
-                            <td>15</td>
-                            <td>FT-Transformer (ADASYN) - 75% Features</td>
-                            <td>86.81%</td>
-                            <td>0.6830</td>
-                            <td>0.9083</td>
-                        </tr>
-                    </table>
-				</section>
-
-				<!-- Slide 11: Phase 5 - Insights -->
-				<section>
-					<h3>The "Deep Learning Gap"</h3>
-                    <p><strong>Result:</strong> Traditional tree-based models decisively outclassed Modern Deep Learning.</p>
-					<ul class="fragment">
-						<li>XGBoost proved highly precise in distinguishing success vs. failure.</li>
-						<li>Deep Learning models plateaued (~86.8% accuracy) and struggled severely with full feature sets.</li>
-                        <li><strong>Data Efficiency:</strong> Top models maintained accuracy at 75% features but collapsed at 25%.</li>
-					</ul>
-				</section>
-
-				<!-- Slide 12: Phase 5 - XAI -->
-				<section>
-					<h2>Phase 5: Explainable AI (XAI)</h2>
-					<p>Transforming complex models into "human-readable" tools.</p>
-					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-                        <div style="width: 32%; text-align: center;">
-                            <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">Permutation Importance</p>
-                            <img class="clickable-matrix" src="images/XGBoost_Permutation.jpg" alt="Permutation Importance" style="max-height: 200px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'Permutation Importance')">
-                        </div>
-                        <div style="width: 32%; text-align: center;">
-                            <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">SHAP</p>
-                            <img class="clickable-matrix" src="images/XGBoost_SHAP.jpg" alt="SHAP" style="max-height: 200px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'SHAP Analysis')">
-                        </div>
-                        <div style="width: 32%; text-align: center;">
-                            <p style="font-size: 0.6em; margin-bottom: 5px; font-weight: bold;">LIME</p>
-                            <img class="clickable-matrix" src="images/XGBoost_LIME.jpg" alt="LIME" style="max-height: 200px; border-radius: 8px;" onclick="openSingleImageModal(this.src, 'LIME Analysis')">
-                        </div>
-                    </div>
-				</section>
-
-
-				<!-- Slide 14: Phase 5 - GDPR -->
-				<section>
-					<h3>Accuracy vs. GDPR Compliance</h3>
-					<p>The Ethical Accuracy-Calibration Paradox</p>
-					<ul class="fragment">
-						<li><strong>XGBoost:</strong> Most accurate overall.</li>
-						<li><strong>Random Forest:</strong> Yielded a vastly lower Expected Calibration Error (ECE - 0.0326 vs 0.0674).</li>
-						<li><em>Takeaway:</em> Random Forest provides more "trustworthy" probability scores, aligning better with GDPR's "Right to an Explanation".</li>
-					</ul>
-				</section>
-
-				<!-- Slide 15: Conclusion -->
-				<section>
-					<h2>Conclusion & Future Work</h2>
-					<ul>
-						<li>Gradient Boosting (XGBoost) remains the apex for tabular B2B forecasting.</li>
-						<li>Transparency and Model Actionability dictate practical success.</li>
-						<li><strong>Future Work:</strong> Incorporating unstructured data (emails/transcripts) via NLP and expanding hardware scaling.</li>
-					</ul>
-				</section>
-
-			</div>
-		</div>
-
-		<script src="dist/reveal.js"></script>
-		<script src="dist/plugin/notes.js"></script>
-		<script src="dist/plugin/markdown.js"></script>
-		<script src="dist/plugin/highlight.js"></script>
-		<script>
-			Reveal.initialize({
-				hash: true,
-				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
-			});
-		</script>
-
-		<!-- Matrix Comparison Modal -->
-		<div id="matrixModal" class="matrix-modal">
-			<button class="close-modal" onclick="closeModal()">&times;</button>
-			<div class="matrix-modal-content">
-				<div class="matrix-modal-panel">
-					<div class="matrix-modal-title">Original (100% Features)</div>
-					<img src="images/Full_Features_correlation.jpg" alt="Original Matrix">
-				</div>
-				<div class="matrix-modal-panel">
-					<div id="modalCompareTitle" class="matrix-modal-title">Compared Matrix</div>
-					<img id="modalCompareImg" src="" alt="Compared Matrix">
-				</div>
-			</div>
-		</div>
-
-		<script>
-			function openModal(imgSrc, title) {
-				document.getElementById('modalCompareImg').src = imgSrc;
-				document.getElementById('modalCompareTitle').innerText = title;
-				document.getElementById('matrixModal').classList.add('active');
-			}
-			function closeModal() {
-				document.getElementById('matrixModal').classList.remove('active');
-			}
-            
-            // Close on background click
-            document.getElementById('matrixModal').addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
-            });
-            
-            // Esc key close
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    if(typeof closeFullTableModal === 'function') closeFullTableModal();
-                    if(typeof closeSingleImageModal === 'function') closeSingleImageModal();
-                }
-            });
-		</script>
-
-		<!-- Full Table Modal -->
-		<div id="fullTableModal" class="matrix-modal">
-			<button class="close-modal" onclick="closeFullTableModal()">&times;</button>
-			<div class="matrix-modal-content" style="flex-direction: column; width: 85%; background: #ECF3F5; padding: 20px; border-radius: 8px; overflow-y: auto; max-height: 90%; justify-content: flex-start;">
-				<h3 style="color: #56A5B9; margin-bottom: 20px;">Table 5.1: Full Model Ranking</h3>
-				<table class="results-table" style="width: 100%; font-size: 0.9em; margin: 0; background-color: transparent; color: #333333;">
-					<tr>
-						<th>Rank</th>
-						<th>Model Configuration</th>
-						<th>Accuracy</th>
-						<th>F1 Score</th>
-						<th>ROC-AUC</th>
-					</tr>
-					<tr><td>1</td><td>XGBoost (SMOTE) - 100% Features</td><td>89.57%</td><td>0.7576</td><td>0.9390</td></tr>
-					<tr><td>2</td><td>XGBoost (ADASYN) - 100% Features</td><td>89.50%</td><td>0.7554</td><td>0.9387</td></tr>
-					<tr><td>3</td><td>XGBoost (SMOTE) - 75% Features</td><td>89.50%</td><td>0.7551</td><td>0.9385</td></tr>
-					<tr><td>4</td><td>XGBoost (ADASYN) - 75% Features</td><td>89.44%</td><td>0.7533</td><td>0.9385</td></tr>
-					<tr><td>5</td><td>Random Forest (SMOTE) - 100% Features</td><td>87.61%</td><td>0.7195</td><td>0.9250</td></tr>
-					<tr><td>6</td><td>Random Forest (ADASYN) - 100% Features</td><td>87.60%</td><td>0.7186</td><td>0.9248</td></tr>
-					<tr><td>7</td><td>Random Forest (SMOTE) - 75% Features</td><td>87.53%</td><td>0.7157</td><td>0.9242</td></tr>
-					<tr><td>8</td><td>Random Forest (ADASYN) - 75% Features</td><td>87.39%</td><td>0.7121</td><td>0.9234</td></tr>
-					<tr><td>9</td><td>TabNet (SMOTE) - 75% Features</td><td>86.54%</td><td>0.6979</td><td>0.9015</td></tr>
-					<tr><td>10</td><td>TabNet (ADASYN) - 75% Features</td><td>86.53%</td><td>0.6976</td><td>0.9015</td></tr>
-					<tr><td>11</td><td>TabNet (SMOTE) - 100% Features</td><td>86.15%</td><td>0.6865</td><td>0.8927</td></tr>
-					<tr><td>12</td><td>TabNet (ADASYN) - 100% Features</td><td>85.94%</td><td>0.6811</td><td>0.8918</td></tr>
-					<tr><td>13</td><td>XGBoost (ADASYN) - 25% Features</td><td>86.91%</td><td>0.6811</td><td>0.8879</td></tr>
-					<tr><td>14</td><td>XGBoost (SMOTE) - 25% Features</td><td>86.88%</td><td>0.6806</td><td>0.8878</td></tr>
-					<tr><td>15</td><td>FT-Transformer (ADASYN) - 75% Features</td><td>86.81%</td><td>0.6830</td><td>0.9083</td></tr>
-					<tr><td>16</td><td>FT-Transformer (SMOTE) - 75% Features</td><td>86.66%</td><td>0.6784</td><td>0.9085</td></tr>
-					<tr><td>17</td><td>FT-Transformer (ADASYN) - 100% Features</td><td>86.30%</td><td>0.6698</td><td>0.9018</td></tr>
-					<tr><td>18</td><td>Random Forest (SMOTE) - 25% Features</td><td>86.19%</td><td>0.6685</td><td>0.8804</td></tr>
-					<tr><td>19</td><td>Random Forest (ADASYN) - 25% Features</td><td>86.20%</td><td>0.6680</td><td>0.8802</td></tr>
-					<tr><td>20</td><td>FT-Transformer (SMOTE) - 100% Features</td><td>86.17%</td><td>0.6657</td><td>0.9009</td></tr>
-					<tr><td>21</td><td>TabNet (SMOTE) - 25% Features</td><td>82.72%</td><td>0.6276</td><td>0.8404</td></tr>
-					<tr><td>22</td><td>TabNet (ADASYN) - 25% Features</td><td>82.37%</td><td>0.6223</td><td>0.8404</td></tr>
-					<tr><td>23</td><td>FT-Transformer (ADASYN) - 25% Features</td><td>84.14%</td><td>0.6033</td><td>0.8521</td></tr>
-					<tr><td>24</td><td>FT-Transformer (SMOTE) - 25% Features</td><td>83.99%</td><td>0.5969</td><td>0.8524</td></tr>
-				</table>
-			</div>
-		</div>
-
-		<script>
-			function openFullTableModal() {
-				document.getElementById('fullTableModal').classList.add('active');
-			}
-			function closeFullTableModal() {
-				document.getElementById('fullTableModal').classList.remove('active');
-			}
-            
-            // Close on background click
-            document.getElementById('fullTableModal').addEventListener('click', function(e) {
-                if (e.target === this) closeFullTableModal();
-            });
-		</script>
-
-		<!-- Single Image Modal -->
-		<div id="singleImageModal" class="matrix-modal">
-			<button class="close-modal" onclick="closeSingleImageModal()">&times;</button>
-			<div class="matrix-modal-content" style="width: 90%; height: 90%; justify-content: center; flex-direction: column;">
-                <div id="singleImageTitle" class="matrix-modal-title"></div>
-				<img id="singleImageImg" src="" alt="Enlarged View" style="max-width: 100%; max-height: 85%; object-fit: contain; border-radius: 8px;">
-			</div>
-		</div>
-
-		<script>
-			function openSingleImageModal(imgSrc, title) {
-				document.getElementById('singleImageImg').src = imgSrc;
-				document.getElementById('singleImageTitle').innerText = title;
-				document.getElementById('singleImageModal').classList.add('active');
-			}
-			function closeSingleImageModal() {
-				document.getElementById('singleImageModal').classList.remove('active');
-			}
-            
-            // Close on background click
-            document.getElementById('singleImageModal').addEventListener('click', function(e) {
-                if (e.target === this) closeSingleImageModal();
-            });
-		</script>
-	</body>
 </html>
